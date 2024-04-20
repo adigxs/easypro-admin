@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./pages/home";
 import Login from "./pages/auth/login";
-import AuthMiddleware from "./layouts/auth-middleware";
+import AuthMiddleware from "./core/middleware/auth-middleware";
 import { AuthProvider } from "./core/context/auth-context";
 import AdminPage from "./pages/admin.page";
 import { RequestsPage } from "./pages/requests.page";

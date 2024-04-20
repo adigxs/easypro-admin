@@ -58,9 +58,9 @@ export function SignUpDialog({
         return createAgent(userRequest);
       },
       onSuccess(data) {
-        if (!isNil(data.data)) {
+        if (!isNil(data.agent)) {
           toast("User add", { type: "success" });
-          const user = data.data as User;
+          const user = data.agent as User;
           dispatch!(user);
           handleOpen();
         } else {
@@ -68,26 +68,31 @@ export function SignUpDialog({
           setOpenAlert(true);
         }
       },
-      onError(error) {},
+      onError(error) {
+        toast(error.message, { type: "error" });
+      },
     });
 
-  const { mutate: updateUserMutate } = useMutation({
-    mutationFn: (userUpdate: AgentUpdateRequest) => {
-      return updateAgent(userUpdate.id!, userUpdate);
-    },
-    onSuccess(data) {
-      //   if (!isNil(data.data)) {
-      //     toast("User update", { type: "success" });
-      //     const user = data.data as User;
-      //     dispatch!(user);
-      //     handleOpen();
-      //   } else {
-      //     setErrorMessage(data.message);
-      //     setOpenAlert(true);
-      //   }
-    },
-    onError(error) {},
-  });
+  const { mutate: updateUserMutate, isPending: updateUserIsPending } =
+    useMutation({
+      mutationFn: (userUpdate: AgentUpdateRequest) => {
+        return updateAgent(userUpdate.id!, userUpdate);
+      },
+      onSuccess(data) {
+        if (data) {
+          toast("User update", { type: "success" });
+          const user = data as User;
+          dispatch!(user);
+          handleOpen();
+        } else {
+          setErrorMessage(data.message);
+          setOpenAlert(true);
+        }
+      },
+      onError(error) {
+        toast(error.message, { type: "error" });
+      },
+    });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,8 +100,8 @@ export function SignUpDialog({
     setOpenAlert(false);
     if (action === "add") {
       createUserMutate({
-        firstname: firstname,
-        lastname: lastname,
+        first_name: firstname,
+        last_name: lastname,
         username: `${lastname} ${firstname}`,
         email: email,
         password: password,
@@ -104,11 +109,11 @@ export function SignUpDialog({
     } else {
       updateUserMutate({
         id: user!.id,
-        lastname: isEmpty(lastname) ? user!.lastname : lastname,
-        firstname: isEmpty(firstname) ? user!.firstname : firstname,
+        last_name: isEmpty(lastname) ? user!.last_name : lastname,
+        first_name: isEmpty(firstname) ? user!.first_name : firstname,
         username:
           isEmpty(lastname) || isEmpty(firstname)
-            ? `${user!.lastname} ${user!.firstname}`
+            ? `${user!.last_name} ${user!.first_name}`
             : `${lastname} ${firstname}`,
         email: isEmpty(email) ? user!.email : email,
       });
@@ -167,8 +172,8 @@ export function SignUpDialog({
                 size="lg"
                 required
                 type="text"
-                defaultValue={!isEmpty(user) ? user.username : ""}
-                disabled={createUserIsPending}
+                defaultValue={!isEmpty(user) ? user.last_name : ""}
+                disabled={createUserIsPending || updateUserIsPending}
                 onChange={(e) => setLastName(e.target.value)}
                 crossOrigin=""
               />
@@ -180,8 +185,8 @@ export function SignUpDialog({
                 size="lg"
                 required
                 type="text"
-                defaultValue={!isEmpty(user) ? user.username : ""}
-                disabled={createUserIsPending}
+                defaultValue={!isEmpty(user) ? user.first_name : ""}
+                disabled={createUserIsPending || updateUserIsPending}
                 onChange={(e) => setFirstName(e.target.value)}
                 crossOrigin=""
               />
@@ -195,7 +200,7 @@ export function SignUpDialog({
                 type="email"
                 required
                 defaultValue={!isEmpty(user) ? user.email : ""}
-                disabled={createUserIsPending}
+                disabled={createUserIsPending || updateUserIsPending}
                 onChange={(e) => setEmail(e.target.value)}
                 crossOrigin=""
               />
@@ -208,7 +213,7 @@ export function SignUpDialog({
                     label="Mot de passe"
                     size="lg"
                     required
-                    disabled={createUserIsPending}
+                    disabled={createUserIsPending || updateUserIsPending}
                     onChange={(e) => setPassword(e.target.value)}
                     crossOrigin=""
                   />
@@ -223,7 +228,11 @@ export function SignUpDialog({
                 type="submit"
                 placeholder={""}
               >
-                {!createUserIsPending ? content : <SpinnerLoader size="sm" />}
+                {!createUserIsPending || !updateUserIsPending ? (
+                  content
+                ) : (
+                  <SpinnerLoader size="sm" />
+                )}
               </Button>
             </CardFooter>
           </Card>

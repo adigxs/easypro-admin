@@ -1,9 +1,5 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import {
-  LockClosedIcon,
-  PencilIcon,
-  UserPlusIcon,
-} from "@heroicons/react/24/solid";
+import { LockClosedIcon, UserPlusIcon } from "@heroicons/react/24/solid";
 import {
   Card,
   CardHeader,
@@ -11,12 +7,7 @@ import {
   Typography,
   Button,
   CardBody,
-  Chip,
   CardFooter,
-  Tabs,
-  TabsHeader,
-  Tab,
-  Avatar,
   IconButton,
   Tooltip,
 } from "@material-tailwind/react";
@@ -28,69 +19,24 @@ import React from "react";
 import { AgentPaginate, AgentUpdateRequest, User } from "../core/entities/user";
 import { useQuery } from "@tanstack/react-query";
 import { getAllAgents } from "../core/api/api";
-import { isNil } from "lodash";
+import { isEmpty, isNil } from "lodash";
 import { UpdatePasswordDialog } from "../components/forms/update-password-dialog";
+import { SpinnerLoader } from "../components/spinner-loader";
+import { PaginationCustom } from "../components/pagination-custom";
 
-const TABLE_HEAD = ["Nom & Email", "Télèphone", "TPI/TPGI", "Créer le", ""];
-
-const TABLE_ROWS = [
-  {
-    img: "/logo512.png",
-    name: "John Michael",
-    email: "john@tim.com",
-    job: "Douala",
-    org: "Ndokoti",
-    phone: "+237 655413390",
-    date: "23/04/18",
-  },
-  {
-    img: "/logo512.png",
-    name: "Alexa Liras",
-    email: "alexa@tim.com",
-    job: "Douala",
-    org: "Ndokoti",
-    phone: "+237 655413390",
-    date: "23/04/18",
-  },
-  {
-    img: "/logo512.png",
-    name: "Laurent Perrier",
-    email: "laurent@tim.com",
-    job: "Douala",
-    org: "Ndokoti",
-    phone: "+237 655413390",
-    date: "19/09/17",
-  },
-  {
-    img: "/logo512.png",
-    name: "Michael Levi",
-    email: "michael@tim.com",
-    job: "Douala",
-    org: "Ndokoti",
-    phone: "+237 655413390",
-    date: "24/12/08",
-  },
-  {
-    img: "/logo512.png",
-    name: "Richard Gran",
-    email: "richard@tim.com",
-    job: "Douala",
-    org: "Ndokoti",
-    phone: "+237 655413390",
-    date: "04/10/21",
-  },
-];
+const TABLE_HEAD = ["Nom & Email", "Télèphone", "Région", "Créer le", ""];
 
 export function AgentPage() {
   const [openSignUp, setOpenSignUp] = React.useState(false);
   const [openUpadeSignUp, setOpenUpdateSignUp] = React.useState(false);
   const [openUpadePassword, setOpenUpdatePassword] = React.useState(false);
   const [query, setQuery] = React.useState<string>("");
-  const [user, setUser] = React.useState<User>();
+  const [agent, setAgent] = React.useState<User>();
+  const [page, setPage] = React.useState<number>(1);
 
   const {
-    data: usersData,
-    isLoading: isLoadingUsers,
+    data: agentsData,
+    isLoading: isLoadingAgents,
     refetch: refreshUsers,
     error,
   } = useQuery<AgentPaginate>({
@@ -110,12 +56,18 @@ export function AgentPage() {
   );
 
   const handleUpdate = React.useCallback((item: any) => {
-    // setUser(item);
+    setAgent(item);
     setOpenUpdateSignUp(true);
   }, []);
 
+  const handleChangePage = (item: number) => {
+    console.log(item);
+    setPage(item);
+    setQuery(`?page=${item}`);
+  };
+
   const handleUpdatePassword = React.useCallback((item: any) => {
-    setUser(item);
+    setAgent(item);
     setOpenUpdatePassword(true);
   }, []);
 
@@ -127,6 +79,7 @@ export function AgentPage() {
           name="Agents"
           path="/dashboard/agents"
         />
+
         <Card placeholder={""} className="shadow-none w-full">
           <CardHeader
             placeholder={""}
@@ -171,170 +124,160 @@ export function AgentPage() {
               </div>
             </div>
           </CardHeader>
-          <CardBody placeholder={""} className="overflow-scroll px-0">
-            <table className="mt-4 w-full min-w-max table-auto text-left">
-              <thead>
-                <tr>
-                  {TABLE_HEAD.map((head) => (
-                    <th
-                      key={head}
-                      className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
-                    >
-                      <Typography
-                        placeholder={""}
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal leading-none opacity-70"
-                      >
-                        {head}
-                      </Typography>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {TABLE_ROWS.map((item, index) => {
-                  const isLast = index === TABLE_ROWS.length - 1;
-                  const classes = isLast
-                    ? "p-4"
-                    : "p-4 border-b border-blue-gray-50";
-
-                  return (
-                    <tr key={item.name}>
-                      <td className={classes}>
-                        <div className="flex items-center gap-3">
-                          <Avatar
+          {isLoadingAgents ? (
+            <SpinnerLoader size="lg" />
+          ) : (
+            <CardBody placeholder={""} className="overflow-scroll px-0">
+              {!isEmpty(agentsData) ? (
+                <table className="mt-4 w-full min-w-max table-auto text-left">
+                  <thead>
+                    <tr>
+                      {TABLE_HEAD.map((head) => (
+                        <th
+                          key={head}
+                          className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
+                        >
+                          <Typography
                             placeholder={""}
-                            src={item.img}
-                            alt={item.name}
-                            size="sm"
-                          />
-                          <div className="flex flex-col">
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal leading-none opacity-70"
+                          >
+                            {head}
+                          </Typography>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {agentsData?.results.map((item, index) => {
+                      const isLast = index === agentsData?.results.length - 1;
+                      const classes = isLast
+                        ? "p-4"
+                        : "p-4 border-b border-blue-gray-50";
+
+                      return (
+                        <tr key={item.id}>
+                          <td className={classes}>
+                            <div className="flex items-center gap-3">
+                              {/* <Avatar
+                              placeholder={""}
+                              src={item.img}
+                              alt={item.name}
+                              size="sm"
+                            /> */}
+                              <div className="h-12 w-12 flex items-center justify-center rounded-full bg-blue-400 text-white">
+                                {item.first_name?.slice(0, 1) +
+                                  item.last_name.slice(0, 1)}
+                              </div>
+                              <div className="flex flex-col">
+                                <Typography
+                                  placeholder={""}
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-normal"
+                                >
+                                  {item.first_name + " " + item.last_name}
+                                </Typography>
+                                <Typography
+                                  placeholder={""}
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-normal opacity-70"
+                                >
+                                  {item.email}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={classes}>
+                            <div className="w-max">
+                              <Typography
+                                placeholder={""}
+                                variant="small"
+                                color="blue-gray"
+                                className="font-normal"
+                              >
+                                {item.phone}
+                              </Typography>
+                            </div>
+                          </td>
+                          <td className={classes}>
+                            <div className="flex flex-col">
+                              <Typography
+                                placeholder={""}
+                                variant="small"
+                                color="blue-gray"
+                                className="font-normal"
+                              >
+                                {item.region}
+                              </Typography>
+                              <Typography
+                                placeholder={""}
+                                variant="small"
+                                color="blue-gray"
+                                className="font-normal opacity-70"
+                              >
+                                {item.court}
+                              </Typography>
+                            </div>
+                          </td>
+
+                          <td className={classes}>
                             <Typography
                               placeholder={""}
                               variant="small"
                               color="blue-gray"
                               className="font-normal"
                             >
-                              {item.name}
+                              {item.createdAt}
                             </Typography>
-                            <Typography
-                              placeholder={""}
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal opacity-70"
-                            >
-                              {item.email}
-                            </Typography>
-                          </div>
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <div className="w-max">
-                          <Typography
-                            placeholder={""}
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {item.phone}
-                          </Typography>
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <div className="flex flex-col">
-                          <Typography
-                            placeholder={""}
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {item.job}
-                          </Typography>
-                          <Typography
-                            placeholder={""}
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal opacity-70"
-                          >
-                            {item.org}
-                          </Typography>
-                        </div>
-                      </td>
-
-                      <td className={classes}>
-                        <Typography
-                          placeholder={""}
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {item.date}
-                        </Typography>
-                      </td>
-                      <td className={classes}>
-                        <Tooltip content="Update Password">
-                          <IconButton
-                            variant="text"
-                            onClick={() => handleUpdatePassword(item)}
-                            placeholder={""}
-                          >
-                            <LockClosedIcon
-                              className="h-6 w-6"
-                              color="purple"
-                            />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip content="Edit Agent">
-                          <IconButton
-                            color="blue"
-                            placeholder={""}
-                            variant="text"
-                            onClick={() => handleUpdate(item)}
-                          >
-                            <EditIcon className="h-6 w-6 text-blue-400" />
-                          </IconButton>
-                        </Tooltip>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </CardBody>
+                          </td>
+                          <td className={classes}>
+                            <Tooltip content="Update Password">
+                              <IconButton
+                                variant="text"
+                                onClick={() => handleUpdatePassword(item)}
+                                placeholder={""}
+                              >
+                                <LockClosedIcon
+                                  className="h-6 w-6"
+                                  color="purple"
+                                />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip content="Edit Agent">
+                              <IconButton
+                                color="blue"
+                                placeholder={""}
+                                variant="text"
+                                onClick={() => handleUpdate(item)}
+                              >
+                                <EditIcon className="h-6 w-6 text-blue-400" />
+                              </IconButton>
+                            </Tooltip>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              ) : (
+                <span>Aucune Données</span>
+              )}
+            </CardBody>
+          )}
           <CardFooter
             placeholder={""}
-            className="hidden md:flex items-center justify-between border-t border-blue-gray-50 p-4"
+            className="hidden md:flex items-center justify-center border-t border-blue-gray-50 p-4"
           >
-            <Button placeholder={""} variant="outlined" size="sm">
-              Precedent
-            </Button>
-            <div className="flex items-center gap-2">
-              <IconButton placeholder={""} variant="outlined" size="sm">
-                1
-              </IconButton>
-              <IconButton placeholder={""} variant="text" size="sm">
-                2
-              </IconButton>
-              <IconButton placeholder={""} variant="text" size="sm">
-                3
-              </IconButton>
-              <IconButton placeholder={""} variant="text" size="sm">
-                ...
-              </IconButton>
-              <IconButton placeholder={""} variant="text" size="sm">
-                8
-              </IconButton>
-              <IconButton placeholder={""} variant="text" size="sm">
-                9
-              </IconButton>
-              <IconButton placeholder={""} variant="text" size="sm">
-                10
-              </IconButton>
-            </div>
-            <Button placeholder={""} variant="outlined" size="sm">
-              Suivant
-            </Button>
+            <PaginationCustom
+              prevPage={(index) => handleChangePage(index - 1)}
+              nextPage={(index) => handleChangePage(index + 1)}
+              changePage={handleChangePage}
+              totalPages={Math.floor(agentsData?.count! / 10) + 1}
+              page={page}
+            />
           </CardFooter>
         </Card>
       </LayoutContent>
@@ -350,14 +293,14 @@ export function AgentPage() {
         open={openUpadeSignUp}
         handleOpen={() => setOpenUpdateSignUp(!openUpadeSignUp)}
         dispatch={handleUpdateResponse}
-        user={user}
+        user={agent}
         title="Mettre à jour cet agent"
         description="Mettez à jour votre nom complet et votre adresse e-mail."
         action="edit"
       />
-      {!isNil(user) ? (
+      {!isNil(agent) ? (
         <UpdatePasswordDialog
-          userId={user.id!}
+          userId={agent.id!}
           open={openUpadePassword}
           handleOpen={() => setOpenUpdatePassword(!openUpadePassword)}
         />

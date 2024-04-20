@@ -1,6 +1,6 @@
 import React, { useEffect, PropsWithChildren } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { isTokenValid } from "../core/authentificate";
+import { isTokenValid } from "../authentificate";
 
 export default function AuthMiddleware({ children }: PropsWithChildren<{}>) {
   const navigate = useNavigate();

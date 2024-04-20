@@ -11,7 +11,7 @@ export const loginUser = async (body: LoginRequest) => {
   return await res.json();
 };
 export const createAgent = async (body: AgentRequest) => {
-  const res = await post("/user/", body);
+  const res = await post("/agents/", body);
   return await res.json();
 };
 export const updateAgent = async (userId: string, body: AgentUpdateRequest) => {
@@ -20,7 +20,7 @@ export const updateAgent = async (userId: string, body: AgentUpdateRequest) => {
 };
 
 export const getAllAgents = async (query?: string) => {
-  const res = await get(`/agents${query}/`);
+  const res = await get(`/agents/${query}`);
   return await res.json();
 };
 

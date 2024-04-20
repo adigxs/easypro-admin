@@ -9,7 +9,7 @@ import { BEARER_TOKEN, USER_TOKEN } from "../../core/entities/contant";
 import Cookies from "js-cookie";
 import { isEmpty, isNil, omit } from "lodash";
 import { Spinner } from "@material-tailwind/react";
-import { User } from "../../core/entities/user";
+import { User, UserLoginResponse } from "../../core/entities/user";
 import { AlertType } from "../../components/alert-notification";
 
 export default function Login() {
@@ -30,17 +30,20 @@ export default function Login() {
       return loginUser(login);
     },
     onSuccess(data) {
-      console.log(data);
-
-      if (!isNil(data.data)) {
-        console.log(data.data);
-        // const user = data.data.user as User;
-        // const token = data.data.token as string;
-        // Cookies.set(BEARER_TOKEN, token, { path: "/" });
-        // Cookies.set(USER_TOKEN, JSON.stringify(omit(user, "password")), {
-        //   path: "/",
-        // });
-        // // window.location.href = "/dashboard/admin";
+      if (data.success) {
+        console.log(data);
+        const user = data.user as UserLoginResponse;
+        const token = data.token as string;
+        Cookies.set(BEARER_TOKEN, token, { path: "/" });
+        Cookies.set(USER_TOKEN, JSON.stringify(omit(user, "password")), {
+          path: "/",
+        });
+        setMessages({
+          message: data.message,
+          type: "success",
+          color: "green",
+        });
+        window.location.href = "/dashboard/admin";
       } else {
         setOpen(true);
         setMessages({

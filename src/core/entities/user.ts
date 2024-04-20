@@ -3,10 +3,18 @@ export type actionsType = "add" | "edit";
 export interface User {
   id?: string;
   email: string;
-  firstname: string;
-  lastname: string;
   username: string;
+  last_name: string;
+  first_name?: string;
+  phone?: string;
+  court?: string;
   createdAt?: string;
+  region?: string;
+}
+
+export interface UserLoginResponse extends User {
+  is_csa?: boolean;
+  region?: any;
 }
 
 export interface AgentRequest extends User {
@@ -16,11 +24,11 @@ export interface AgentRequest extends User {
 export interface AgentUpdateRequest extends User {}
 
 export interface AgentPaginate {
-  data: User[];
-  page: number;
-  pageSize: number;
-  totalResults: number;
-  totalPages: number;
+  results: User[];
+  count: number;
+  // pageSize: number;
+  // totalResults: number;
+  // totalPages: number;
 }
 
 export interface UserPasswordRequest {
