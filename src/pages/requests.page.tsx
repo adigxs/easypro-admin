@@ -1,4 +1,8 @@
-import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
+import {
+  InformationCircleIcon,
+  PencilIcon,
+  TrashIcon,
+} from "@heroicons/react/24/solid";
 import {
   ArrowDownTrayIcon,
   MagnifyingGlassIcon,
@@ -16,63 +20,102 @@ import {
   Tooltip,
   Input,
 } from "@material-tailwind/react";
+import { useQuery } from "@tanstack/react-query";
+
 import LayoutContent from "../layouts/layout-content";
 import { Send2Icon } from "../components/icons";
 import { BreadcrumbsMenu } from "../components";
+import { getAllRequests } from "../core/api/api";
+import {
+  RequestPaginate,
+  RequestResponse,
+} from "../core/entities/request.entities";
+import React from "react";
+import { SpinnerLoader } from "../components/spinner-loader";
+import { PaginationCustom } from "../components/pagination-custom";
+import { formatDate } from "../utils/common";
+import { RequestInfos } from "../components/request-infos";
+import { isEmpty } from "lodash";
 
 const TABLE_HEAD = [
   "Code",
-  "Item",
-  "Item",
-  "Status",
-  "Fournisseurs",
+  "Civilité",
+  "Nom et Prénom",
+  "Téléphone",
+  "Statut",
+  "Type d'usager",
+  "Créer le",
   "Actions",
 ];
 
-const TABLE_ROWS = [
-  {
-    name: "CD000000001",
-    amount: "5,000",
-    date: "Wed 1:00pm",
-    status: "paid",
-    account: "orange",
-    expiry: "06/2026",
-  },
-  {
-    name: "CD000000001",
-    amount: "5,000",
-    date: "Wed 1:00pm",
-    status: "paid",
-    account: "mtn",
-    expiry: "06/2026",
-  },
-  {
-    name: "CD000000001",
-    amount: "3,400",
-    date: "Mon 7:40pm",
-    status: "pending",
-    account: "mtn",
-    expiry: "06/2026",
-  },
-  {
-    name: "CD000000001",
-    amount: "1,000",
-    date: "Wed 5:00pm",
-    status: "paid",
-    account: "orange",
-    expiry: "06/2026",
-  },
-  {
-    name: "CD000000001",
-    amount: "14,000",
-    date: "Wed 3:30am",
-    status: "cancelled",
-    account: "orange",
-    expiry: "06/2026",
-  },
-];
+// const TABLE_ROWS = [
+//   {
+//     name: "CD000000001",
+//     amount: "5,000",
+//     date: "Wed 1:00pm",
+//     status: "paid",
+//     account: "orange",
+//     expiry: "06/2026",
+//   },
+//   {
+//     name: "CD000000001",
+//     amount: "5,000",
+//     date: "Wed 1:00pm",
+//     status: "paid",
+//     account: "mtn",
+//     expiry: "06/2026",
+//   },
+//   {
+//     name: "CD000000001",
+//     amount: "3,400",
+//     date: "Mon 7:40pm",
+//     status: "pending",
+//     account: "mtn",
+//     expiry: "06/2026",
+//   },
+//   {
+//     name: "CD000000001",
+//     amount: "1,000",
+//     date: "Wed 5:00pm",
+//     status: "paid",
+//     account: "orange",
+//     expiry: "06/2026",
+//   },
+//   {
+//     name: "CD000000001",
+//     amount: "14,000",
+//     date: "Wed 3:30am",
+//     status: "cancelled",
+//     account: "orange",
+//     expiry: "06/2026",
+//   },
+// ];
 
 export function RequestsPage() {
+  const [query, setQuery] = React.useState<string>("");
+  const [page, setPage] = React.useState<number>(1);
+  const [request, setRequest] = React.useState<RequestResponse>();
+  const [openInfoModal, setOpenInfoModal] = React.useState(false);
+
+  const {
+    data: requestsData,
+    isLoading: isLoadingRequests,
+    error,
+  } = useQuery<RequestPaginate>({
+    queryKey: ["all-requests", query],
+    queryFn: () => getAllRequests(query),
+  });
+
+  const handleChangePage = (item: number) => {
+    setPage(item);
+    setQuery(`?page=${item}`);
+  };
+
+  const handleSelectRequest = React.useCallback((item: RequestResponse) => {
+    setRequest(item);
+    setOpenInfoModal(true);
+  }, []);
+
   return (
     <LayoutContent>
       <BreadcrumbsMenu
@@ -114,37 +157,39 @@ export function RequestsPage() {
             </div>
           </div>
         </CardHeader>
-        <CardBody placeholder={""} className="overflow-scroll px-0">
-          <table className="w-full min-w-max table-auto text-left">
-            <thead>
-              <tr>
-                {TABLE_HEAD.map((head) => (
-                  <th
-                    key={head}
-                    className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
-                  >
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal leading-none opacity-70"
-                      placeholder={""}
+        {isLoadingRequests ? (
+          <SpinnerLoader size="lg" />
+        ) : (
+          <CardBody placeholder={""} className="overflow-scroll px-0">
+            <table className="w-full min-w-max table-auto text-left">
+              <thead>
+                <tr>
+                  {TABLE_HEAD.map((head) => (
+                    <th
+                      key={head}
+                      className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
                     >
-                      {head}
-                    </Typography>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {TABLE_ROWS.map(
-                ({ name, amount, date, status, account, expiry }, index) => {
-                  const isLast = index === TABLE_ROWS.length - 1;
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal leading-none opacity-70"
+                        placeholder={""}
+                      >
+                        {head}
+                      </Typography>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {requestsData?.results.map((item, index) => {
+                  const isLast = index === requestsData?.results.length - 1;
                   const classes = isLast
                     ? "p-4"
                     : "p-4 border-b border-blue-gray-50";
 
                   return (
-                    <tr key={name}>
+                    <tr key={item.id}>
                       <td className={classes}>
                         <div className="flex items-center gap-3">
                           <Typography
@@ -153,7 +198,7 @@ export function RequestsPage() {
                             className="font-bold"
                             placeholder={""}
                           >
-                            {name}
+                            {item.code}
                           </Typography>
                         </div>
                       </td>
@@ -164,7 +209,7 @@ export function RequestsPage() {
                           className="font-normal"
                           placeholder={""}
                         >
-                          {amount}
+                          {item.civility}
                         </Typography>
                       </td>
                       <td className={classes}>
@@ -174,7 +219,17 @@ export function RequestsPage() {
                           className="font-normal"
                           placeholder={""}
                         >
-                          {date}
+                          {item.fullName}
+                        </Typography>
+                      </td>
+                      <td className={classes}>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                          placeholder={""}
+                        >
+                          {item.phoneNumber}
                         </Typography>
                       </td>
                       <td className={classes}>
@@ -182,102 +237,76 @@ export function RequestsPage() {
                           <Chip
                             size="sm"
                             variant="ghost"
-                            value={status}
-                            color={
-                              status === "paid"
-                                ? "green"
-                                : status === "pending"
-                                ? "amber"
-                                : "red"
-                            }
+                            value={item.status}
+                            color={"green"}
                           />
                         </div>
                       </td>
                       <td className={classes}>
-                        <div className="flex items-center gap-3">
-                          <div className="h-9 w-12 rounded-md border border-blue-gray-50 p-1">
-                            <Avatar
-                              src={
-                                account === "mtn"
-                                  ? "/assets/logos/mtn-logo.png"
-                                  : "/assets/logos/om-logo.png"
-                              }
-                              placeholder={""}
-                              size="xxl"
-                              alt={account}
-                              variant="square"
-                              className="h-full w-full object-contain p-1"
-                            />
-                          </div>
-                          <div className="flex flex-col">
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal capitalize"
-                              placeholder={""}
-                            >
-                              {account.split("-").join(" ")}
-                            </Typography>
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal opacity-70"
-                              placeholder={""}
-                            >
-                              {expiry}
-                            </Typography>
-                          </div>
-                        </div>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                          placeholder={""}
+                        >
+                          {item.typeUser}
+                        </Typography>
                       </td>
                       <td className={classes}>
-                        <Tooltip content="Supprimer la Demande">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                          placeholder={""}
+                        >
+                          {formatDate(item.created_on)}
+                        </Typography>
+                      </td>
+                      <td className={classes}>
+                        <Tooltip content="Plus d'info">
+                          <IconButton
+                            onClick={() => handleSelectRequest(item)}
+                            variant="text"
+                            placeholder={""}
+                          >
+                            <InformationCircleIcon className="h-8 w-8 text-blue-400" />
+                          </IconButton>
+                        </Tooltip>
+                        {/* <Tooltip content="Supprimer la Demande">
                           <IconButton variant="text" placeholder={""}>
                             <TrashIcon className="h-4 w-4 text-red-400" />
                           </IconButton>
-                        </Tooltip>
+                        </Tooltip> */}
                       </td>
                     </tr>
                   );
-                }
-              )}
-            </tbody>
-          </table>
-        </CardBody>
+                })}
+              </tbody>
+            </table>
+          </CardBody>
+        )}
         <CardFooter
           placeholder={""}
-          className="flex items-center justify-between border-t border-blue-gray-50 p-4"
+          className="hidden md:flex items-center justify-center border-t border-blue-gray-50 p-4"
         >
-          <Button placeholder={""} variant="outlined" size="sm">
-            Precedent
-          </Button>
-          <div className="flex items-center gap-2">
-            <IconButton placeholder={""} variant="outlined" size="sm">
-              1
-            </IconButton>
-            <IconButton placeholder={""} variant="text" size="sm">
-              2
-            </IconButton>
-            <IconButton placeholder={""} variant="text" size="sm">
-              3
-            </IconButton>
-            <IconButton placeholder={""} variant="text" size="sm">
-              ...
-            </IconButton>
-            <IconButton placeholder={""} variant="text" size="sm">
-              8
-            </IconButton>
-            <IconButton placeholder={""} variant="text" size="sm">
-              9
-            </IconButton>
-            <IconButton placeholder={""} variant="text" size="sm">
-              10
-            </IconButton>
-          </div>
-          <Button placeholder={""} variant="outlined" size="sm">
-            Suivant
-          </Button>
+          <PaginationCustom
+            prevPage={(index) => handleChangePage(index - 1)}
+            nextPage={(index) => handleChangePage(index + 1)}
+            changePage={handleChangePage}
+            totalPages={Math.floor(requestsData?.count! / 10) + 1}
+            page={page}
+          />
         </CardFooter>
       </Card>
+      {!isEmpty(request) ? (
+        <RequestInfos
+          request={request}
+          handleOpen={() => setOpenInfoModal(!openInfoModal)}
+          open={openInfoModal}
+        />
+      ) : (
+        <></>
+      )}
     </LayoutContent>
   );
 }

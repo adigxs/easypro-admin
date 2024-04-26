@@ -31,3 +31,8 @@ export const updateUserPassword = async (
   const res = await patch(`/api/change-password/`, password);
   return await res.json();
 };
+
+export const getAllRequests = async (query?: string) => {
+  const res = await get(`/requests/${query}`);
+  return await res.json();
+};

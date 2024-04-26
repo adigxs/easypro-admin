@@ -2,6 +2,7 @@ import Cookies from "js-cookie";
 import { BEARER_TOKEN, USER_TOKEN } from "../core/entities/contant";
 import { Margin, Resolution } from "react-to-pdf";
 import { User } from "../core/entities/user";
+import { DateTime } from "luxon";
 
 export const currentUserFromCookies = (): User | null => {
   const userToken = Cookies.get(USER_TOKEN);
@@ -48,4 +49,9 @@ export const options = {
       useCORS: true,
     },
   },
+};
+
+export const formatDate = (param: string) => {
+  const parsedDate = DateTime.fromISO(param);
+  return parsedDate.toFormat("dd, MM yyyy");
 };

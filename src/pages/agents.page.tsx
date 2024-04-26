@@ -61,7 +61,6 @@ export function AgentPage() {
   }, []);
 
   const handleChangePage = (item: number) => {
-    console.log(item);
     setPage(item);
     setQuery(`?page=${item}`);
   };
