@@ -1,0 +1,12 @@
+{
+    "apps" : [
+      {
+        "name"      : "easypro_web",
+        "script"    : "npx",
+        "interpreter": "none",
+        "args": "serve -s build -l 3001"
+      }
+    ]
+  }
+  
+  

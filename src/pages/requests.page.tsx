@@ -263,7 +263,7 @@ export function RequestsPage() {
                         </Typography>
                       </td>
                       <td className={classes}>
-                        <Tooltip content="Plus d'info">
+                        <Tooltip content="Plus d'infos">
                           <IconButton
                             onClick={() => handleSelectRequest(item)}
                             variant="text"
