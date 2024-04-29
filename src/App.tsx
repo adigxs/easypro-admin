@@ -8,6 +8,7 @@ import { RequestsPage } from "./pages/requests.page";
 import { AgentPage } from "./pages/agents.page";
 import { UsersPage } from "./pages/users.page";
 import { ToastContainer } from "react-toastify";
+import PrivacyPolicy from "./pages/privacy-policy";
 
 function App() {
   return (
@@ -25,6 +26,9 @@ function App() {
             </Routes>
           </AuthProvider>
         </AuthMiddleware>
+        <Routes>
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        </Routes>
       </BrowserRouter>
       <ToastContainer />
     </div>
