@@ -1,18 +1,18 @@
 export default function PrivacyPolicy() {
   return (
-    <main className="max-w-7xl mx-auto flex flex-col gap-y-8 justify-start items-start py-16 font-amaranth">
+    <main className="px-8 xl:px-0 max-w-7xl mx-auto flex flex-col gap-y-8 justify-start items-start py-16 font-amaranth">
       <div className="relative flex flex-col items-center justify-center w-full">
         <span>EasyPro</span>
-        <h1 className="text-xl font-semibold">
+        <h1 className="text-xl font-semibold text-center">
           TERMES ET CONDITIONS DU SERVICE EASYPRO (« Termes »)
         </h1>
         <img
           src="/assets/logos/logo.png"
-          className="h-16 w-16 absolute left-0"
+          className="h-16 w-16 absolute -top-14 md:top-0 left-0"
         />
         <img
           src="/assets/logos/logo.png"
-          className="h-16 w-16 absolute right-0"
+          className="h-16 w-16 absolute -top-14 md:top-0 right-0"
         />
       </div>
 
