@@ -7,13 +7,15 @@ export default function AuthMiddleware({ children }: PropsWithChildren<{}>) {
   const location = useLocation();
 
   useEffect(() => {
-    const inLoginPage = location.pathname === "/auth";
-    const isAuthenticated = isTokenValid();
-    if (!isAuthenticated) {
-      navigate("/auth");
-    }
-    if (isAuthenticated && inLoginPage) {
-      navigate("/dashboard/admin");
+    if (location.pathname != "/privacy-policy") {
+      const inLoginPage = location.pathname === "/auth";
+      const isAuthenticated = isTokenValid();
+      if (!isAuthenticated) {
+        navigate("/auth");
+      }
+      if (isAuthenticated && inLoginPage) {
+        navigate("/dashboard/admin");
+      }
     }
   }, [location.pathname, navigate]);
 
