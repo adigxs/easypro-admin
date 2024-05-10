@@ -12,12 +12,23 @@ import {
 import Chart from "../components/admin/chart";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { BreadcrumbsMenu } from "../components";
+import { useQuery } from "@tanstack/react-query";
+import { visualizations } from "../core/api/api";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function AdminPage() {
   const { currentUser } = useAuthContext();
 
+  const {
+    data: visualizationData,
+    isLoading: isLoadingVisualizations,
+    error,
+  } = useQuery({
+    queryKey: ["all-visualizations"],
+    queryFn: () => visualizations(),
+  });
+  console.log(visualizationData);
   return (
     <LayoutContent>
       <>

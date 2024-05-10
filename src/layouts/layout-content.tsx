@@ -21,9 +21,9 @@ export default function LayoutContent({ children }: LayoutContentProps) {
         <Aside close={closeAside} />
         <section
           className={classNames(
-            { "w-screen": closeAside },
-            { "w-full": !closeAside },
-            " transition-all duration-700 ease-in-out ml-56 z-10 h-screen md:h-100vh-h-7 bg-white mt-16 rounded-lg"
+            { "w-screen ": closeAside },
+            { "w-full md:ml-56": !closeAside },
+            " transition-all duration-700 ease-in-out  z-10 h-screen md:h-100vh-h-7 bg-white mt-16 rounded-lg"
           )}
         >
           {children}

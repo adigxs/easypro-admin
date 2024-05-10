@@ -10,6 +10,10 @@ export const loginUser = async (body: LoginRequest) => {
   const res = await post("/login/", body);
   return await res.json();
 };
+export const visualizations = async () => {
+  const res = await get("api/visualization/render_dashboard/");
+  return await res.json();
+};
 export const createAgent = async (body: AgentRequest) => {
   const res = await post("/agents/", body);
   return await res.json();
