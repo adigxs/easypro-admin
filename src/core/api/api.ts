@@ -14,10 +14,17 @@ export const visualizations = async () => {
   const res = await get("api/visualization/render_dashboard/");
   return await res.json();
 };
+
 export const createAgent = async (body: AgentRequest) => {
   const res = await post("/agents/", body);
   return await res.json();
 };
+
+export const updatePasswordAgent = async (agentId: string) => {
+  const res = await post(`/api/change-password/${agentId}`, {});
+  return await res.json();
+};
+
 export const updateAgent = async (userId: string, body: AgentUpdateRequest) => {
   const res = await patch(`/agents/${userId}/`, body);
   return await res.json();

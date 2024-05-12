@@ -23,7 +23,7 @@ export default function LayoutContent({ children }: LayoutContentProps) {
           className={classNames(
             { "w-screen ": closeAside },
             { "w-full md:ml-56": !closeAside },
-            " transition-all duration-700 ease-in-out  z-10 h-screen md:h-100vh-h-7 bg-white mt-16 rounded-lg"
+            " transition-all duration-700 ease-in-out  z-10 h-screen md:h-screen bg-white mt-16 rounded-lg"
           )}
         >
           {children}

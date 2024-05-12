@@ -39,23 +39,16 @@ export default function Chart() {
     <div className="grid grid-cols-2 h-full w-full mx-6">
       <div
         className="hidden lg:flex items-start justify-start"
-        style={{ height: "100%", width: "100%" }}
+        style={{ height: "100%", width: "90%" }}
       >
         <Bar data={data} />
       </div>
 
       <div
-        className="hidden lg:flex items-center justify-center"
-        style={{ height: "70%", width: "100%" }}
+        className="hidden lg:flex items-start justify-start"
+        style={{ height: "100%", width: "90%" }}
       >
-        <Pie data={pieData} />
-      </div>
-      <div className="lg:hidden block" style={{ height: "40%", width: "90%" }}>
         <Bar data={data} />
-      </div>
-
-      <div className="lg:hidden block" style={{ height: "40%", width: "100%" }}>
-        <Pie data={pieData} />
       </div>
     </div>
   );

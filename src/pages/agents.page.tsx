@@ -17,12 +17,13 @@ import { EditIcon, PeopleIcon } from "../components/icons";
 import { SignUpDialog } from "../components/forms/sign-up-dialog";
 import React from "react";
 import { AgentPaginate, AgentUpdateRequest, User } from "../core/entities/user";
-import { useQuery } from "@tanstack/react-query";
-import { getAllAgents } from "../core/api/api";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getAllAgents, updatePasswordAgent } from "../core/api/api";
 import { isEmpty, isNil } from "lodash";
 import { UpdatePasswordDialog } from "../components/forms/update-password-dialog";
 import { SpinnerLoader } from "../components/spinner-loader";
 import { PaginationCustom } from "../components/pagination-custom";
+import { ShowPasswordDialog } from "../components/forms";
 
 const TABLE_HEAD = ["Nom & Email", "Télèphone", "Région", "Créer le", ""];
 
@@ -32,6 +33,9 @@ export function AgentPage() {
   const [openUpadePassword, setOpenUpdatePassword] = React.useState(false);
   const [query, setQuery] = React.useState<string>("");
   const [agent, setAgent] = React.useState<User>();
+  const [agentGetInfo, setAgentGetinfo] = React.useState<User | null>();
+  const [password, setPassword] = React.useState<string>();
+
   const [page, setPage] = React.useState<number>(1);
 
   const {
@@ -43,6 +47,18 @@ export function AgentPage() {
     queryKey: ["all-agents", query],
     queryFn: () => getAllAgents(query),
   });
+
+  const { mutate: updatePasswordMutate, isPending: passwordIsPending } =
+    useMutation({
+      mutationFn: (agentId: string) => {
+        return updatePasswordAgent(agentId);
+      },
+      onSuccess(data) {
+        setPassword(data.new_password);
+        setOpenUpdatePassword(true);
+      },
+      onError(error) {},
+    });
 
   const handleResponse = React.useCallback(() => {
     refreshUsers();
@@ -65,10 +81,10 @@ export function AgentPage() {
     setQuery(`?page=${item}`);
   };
 
-  const handleUpdatePassword = React.useCallback((item: any) => {
-    setAgent(item);
-    setOpenUpdatePassword(true);
-  }, []);
+  const handleUpdatePassword = (item: any) => {
+    setAgentGetinfo(item);
+    updatePasswordMutate(item.id);
+  };
 
   return (
     <>
@@ -233,18 +249,6 @@ export function AgentPage() {
                             </Typography>
                           </td>
                           <td className={classes}>
-                            <Tooltip content="Update Password">
-                              <IconButton
-                                variant="text"
-                                onClick={() => handleUpdatePassword(item)}
-                                placeholder={""}
-                              >
-                                <LockClosedIcon
-                                  className="h-6 w-6"
-                                  color="purple"
-                                />
-                              </IconButton>
-                            </Tooltip>
                             <Tooltip content="Edit Agent">
                               <IconButton
                                 color="blue"
@@ -253,6 +257,26 @@ export function AgentPage() {
                                 onClick={() => handleUpdate(item)}
                               >
                                 <EditIcon className="h-6 w-6 text-blue-400" />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip content="Update Password">
+                              <IconButton
+                                variant="text"
+                                onClick={() =>
+                                  agentGetInfo?.id === item.id
+                                    ? {}
+                                    : handleUpdatePassword(item)
+                                }
+                                placeholder={""}
+                              >
+                                {agentGetInfo?.id === item.id ? (
+                                  <SpinnerLoader size="sm" />
+                                ) : (
+                                  <LockClosedIcon
+                                    className="h-6 w-6"
+                                    color="red"
+                                  />
+                                )}
                               </IconButton>
                             </Tooltip>
                           </td>
@@ -297,11 +321,16 @@ export function AgentPage() {
         description="Mettez à jour votre nom complet et votre adresse e-mail."
         action="edit"
       />
-      {!isNil(agent) ? (
-        <UpdatePasswordDialog
-          userId={agent.id!}
+
+      {!isNil(agentGetInfo) ? (
+        <ShowPasswordDialog
+          name={`${agentGetInfo?.first_name} ${agentGetInfo?.last_name}`}
+          password={password!}
           open={openUpadePassword}
-          handleOpen={() => setOpenUpdatePassword(!openUpadePassword)}
+          handleOpen={() => {
+            setAgentGetinfo(null);
+            setOpenUpdatePassword(!openUpadePassword);
+          }}
         />
       ) : (
         <></>
