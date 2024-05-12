@@ -37,7 +37,7 @@ export default function Aside({ close }: AsideProps) {
       className={classNames(
         { "hidden ": close },
         { "md:flex ": !close },
-        "hidden transition-all duration-700 ease-in-out w-[24%] lg:w-[18%] xl:w-[12%] h-[500px] fixed bg-white px-2 rounded-lg py-2 left-4 inset-0 my-auto flex-col justify-between top-0 z-20"
+        "hidden transition-all duration-700 ease-in-out w-[24%] lg:w-[8%] xl:w-[8%] h-96 fixed bg-white px-2 rounded-lg py-2 left-4 inset-0 my-auto flex-col justify-between top-0 z-20"
       )}
     >
       <div className=" rounded-md grid grid-cols-1 divide-y w-full gap-y-2 h-full relative">

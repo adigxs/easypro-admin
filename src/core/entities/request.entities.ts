@@ -48,3 +48,9 @@ export interface RequestPaginate {
   // totalResults: number;
   // totalPages: number;
 }
+
+export interface RegionDepartment {
+  region: string;
+  departments: string[];
+  court?: string[];
+}

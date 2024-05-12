@@ -54,7 +54,6 @@ export default function Login() {
       }
     },
     onError(error) {
-      console.log(error.message);
       setMessages({
         message: error.message,
         type: "danger",

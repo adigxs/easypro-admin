@@ -1,12 +1,5 @@
-import {
-  InformationCircleIcon,
-  PencilIcon,
-  TrashIcon,
-} from "@heroicons/react/24/solid";
-import {
-  ArrowDownTrayIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/24/outline";
+import { InformationCircleIcon } from "@heroicons/react/24/solid";
+
 import {
   Card,
   CardHeader,
@@ -24,18 +17,33 @@ import { useQuery } from "@tanstack/react-query";
 
 import LayoutContent from "../layouts/layout-content";
 import { Send2Icon } from "../components/icons";
-import { BreadcrumbsMenu } from "../components";
+import { BreadcrumbsMenu, SelectedSearch } from "../components";
 import { getAllRequests } from "../core/api/api";
 import {
   RequestPaginate,
   RequestResponse,
 } from "../core/entities/request.entities";
-import React from "react";
+import React, { Fragment } from "react";
 import { SpinnerLoader } from "../components/spinner-loader";
 import { PaginationCustom } from "../components/pagination-custom";
 import { formatDate } from "../utils/common";
 import { RequestInfos } from "../components/request-infos";
-import { isEmpty } from "lodash";
+import _, { isEmpty, trimEnd } from "lodash";
+import {
+  CheckIcon,
+  ChevronUpDownIcon,
+  FunnelIcon,
+} from "@heroicons/react/20/solid";
+import { Listbox, Popover, Transition } from "@headlessui/react";
+import {
+  centralFiles,
+  formatToYYYYMMDD,
+  getCourtByRegion,
+  getDepartmentsByRegion,
+  regionsDepartments,
+  requestStatus,
+} from "../utils/mocks";
+import classNames from "classnames";
 
 const TABLE_HEAD = [
   "Code",
@@ -48,54 +56,24 @@ const TABLE_HEAD = [
   "Actions",
 ];
 
-// const TABLE_ROWS = [
-//   {
-//     name: "CD000000001",
-//     amount: "5,000",
-//     date: "Wed 1:00pm",
-//     status: "paid",
-//     account: "orange",
-//     expiry: "06/2026",
-//   },
-//   {
-//     name: "CD000000001",
-//     amount: "5,000",
-//     date: "Wed 1:00pm",
-//     status: "paid",
-//     account: "mtn",
-//     expiry: "06/2026",
-//   },
-//   {
-//     name: "CD000000001",
-//     amount: "3,400",
-//     date: "Mon 7:40pm",
-//     status: "pending",
-//     account: "mtn",
-//     expiry: "06/2026",
-//   },
-//   {
-//     name: "CD000000001",
-//     amount: "1,000",
-//     date: "Wed 5:00pm",
-//     status: "paid",
-//     account: "orange",
-//     expiry: "06/2026",
-//   },
-//   {
-//     name: "CD000000001",
-//     amount: "14,000",
-//     date: "Wed 3:30am",
-//     status: "cancelled",
-//     account: "orange",
-//     expiry: "06/2026",
-//   },
-// ];
-
 export function RequestsPage() {
   const [query, setQuery] = React.useState<string>("");
-  const [page, setPage] = React.useState<number>(1);
+  const [selected, setSelected] = React.useState<{
+    value: string;
+    name: string;
+  }>();
+  const [page, setPage] = React.useState<number | null>(1);
   const [request, setRequest] = React.useState<RequestResponse>();
   const [openInfoModal, setOpenInfoModal] = React.useState(false);
+  const [region, setRegion] = React.useState<string>("");
+  const [department, setDepartment] = React.useState<string>("");
+  const [court, setCourt] = React.useState<string>("");
+  const [centralFile, setCentralFile] = React.useState<string>("");
+  const [status, setStatus] = React.useState<string>("");
+  const [startDate, setStartDate] = React.useState<string>("");
+  const [endDate, setEndDate] = React.useState<string>("");
+  const [departmentList, setDepartmentList] = React.useState<string[]>([]);
+  const [courtList, setCourtList] = React.useState<string[]>([]);
 
   const {
     data: requestsData,
@@ -116,6 +94,55 @@ export function RequestsPage() {
     setOpenInfoModal(true);
   }, []);
 
+  const handleRegion = React.useCallback(
+    (item: string) => {
+      setRegion(item);
+      setDepartmentList(getDepartmentsByRegion(item));
+      setCourtList(getCourtByRegion(item));
+    },
+    [departmentList, courtList]
+  );
+
+  const handleSearch = () => {
+    let queryParams = "";
+
+    if (!isEmpty(region)) {
+      queryParams += `region_name=${region}&`;
+    }
+    if (department !== "Sélectionner") {
+      queryParams += `department_name=${department}&`;
+    }
+    if (court !== "Sélectionner") {
+      queryParams += `court_name=${court}&`;
+    }
+    if (centralFile !== "Sélectionner") {
+      queryParams += `central_file=${centralFile}&`;
+    }
+    if (!_.isEmpty(startDate)) {
+      queryParams += `start_date=${startDate}&`;
+    }
+    if (!_.isEmpty(endDate)) {
+      queryParams += `end_date=${endDate}&`;
+    }
+    if (!isEmpty(status)) {
+      const statusValue = _.find(requestStatus, { name: status })?.value || "";
+      queryParams += `status=${statusValue}&`;
+    }
+    setPage(null);
+    // console.log(`?${trimEnd(queryParams, "&")}`);
+    setQuery(`?${trimEnd(queryParams, "&")}`);
+  };
+
+  const handleStartDateChange = (event: any) => {
+    const formattedDate = formatToYYYYMMDD(event.target.value);
+    setStartDate(formattedDate);
+  };
+
+  const handleEndDateChange = (event: any) => {
+    const formattedDate = formatToYYYYMMDD(event.target.value);
+    setEndDate(formattedDate);
+  };
+
   return (
     <LayoutContent>
       <BreadcrumbsMenu
@@ -128,7 +155,8 @@ export function RequestsPage() {
           placeholder={""}
           floated={false}
           shadow={false}
-          className="rounded-none"
+          className="rounded-none mb-2"
+          style={{ overflow: "unset" }}
         >
           <div className="mb-4 flex flex-col justify-between gap-8 md:flex-row md:items-center">
             <div>
@@ -146,21 +174,178 @@ export function RequestsPage() {
                 Consulter l'ensemble des demandes
               </Typography>
             </div>
-            <div className="flex w-full shrink-0 gap-2 md:w-max">
-              <div className="w-full md:w-72">
-                <Input
-                  label="Code, Region..."
-                  crossOrigin={""}
-                  icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+          </div>
+          <hr />
+          <Typography
+            placeholder={""}
+            color="gray"
+            className="font-semibold my-4"
+          >
+            Filtre de recherche
+          </Typography>
+          <div className="grid grid-cols-5 w-full shrink-0 gap-2 md:w-max">
+            <SelectedSearch
+              label="Région"
+              query={region}
+              onSelectQuery={(item) => handleRegion(item)}
+              items={_.map(regionsDepartments, "region")}
+            />
+            <SelectedSearch
+              label="Département"
+              query={department}
+              onSelectQuery={(item) => setDepartment(item)}
+              items={departmentList}
+            />
+            <SelectedSearch
+              label="TPGI/TPI"
+              query={court}
+              onSelectQuery={(item) => setCourt(item)}
+              items={courtList}
+            />
+            <SelectedSearch
+              label="Fichier Central"
+              query={centralFile}
+              onSelectQuery={(item) => setCentralFile(item)}
+              items={centralFiles()}
+            />
+
+            <div>
+              <Listbox value={selected} onChange={setSelected}>
+                {({ open }) => (
+                  <>
+                    <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">
+                      Statut
+                    </Listbox.Label>
+                    <div className="relative mt-2">
+                      <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 sm:text-sm sm:leading-6">
+                        <span className="block truncate">
+                          {!isEmpty(selected) ? selected.name : "Sélectionner"}
+                        </span>
+                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                          <ChevronUpDownIcon
+                            className="h-5 w-5 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        </span>
+                      </Listbox.Button>
+
+                      <Transition
+                        show={open}
+                        as={Fragment}
+                        leave="transition ease-in duration-100"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                      >
+                        <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                          {requestStatus.map((item) => (
+                            <Listbox.Option
+                              key={item.value}
+                              className={({ active }) =>
+                                classNames(
+                                  active
+                                    ? "bg-green-600 text-white"
+                                    : "text-gray-900",
+                                  "relative cursor-default select-none py-2 pl-3 pr-9"
+                                )
+                              }
+                              value={item}
+                              onClick={() => setStatus(item.value)}
+                            >
+                              {({ selected, active }) => (
+                                <>
+                                  <span
+                                    className={classNames(
+                                      selected
+                                        ? "font-semibold"
+                                        : "font-normal",
+                                      "block truncate"
+                                    )}
+                                  >
+                                    {item.name}
+                                  </span>
+
+                                  {selected ? (
+                                    <span
+                                      className={classNames(
+                                        active
+                                          ? "text-white"
+                                          : "text-green-600",
+                                        "absolute inset-y-0 right-0 flex items-center pr-4"
+                                      )}
+                                    >
+                                      <CheckIcon
+                                        className="h-5 w-5"
+                                        aria-hidden="true"
+                                      />
+                                    </span>
+                                  ) : null}
+                                </>
+                              )}
+                            </Listbox.Option>
+                          ))}
+                        </Listbox.Options>
+                      </Transition>
+                    </div>
+                  </>
+                )}
+              </Listbox>
+            </div>
+
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Date de Début
+              </label>
+              <div className="mt-2">
+                <input
+                  type="date"
+                  onChange={(e) => handleStartDateChange(e)}
+                  className="block w-full rounded-md border-0 py-1.5 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
+
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Date de Fin
+              </label>
+              <div className="mt-2">
+                <input
+                  type="date"
+                  onChange={(e) => handleEndDateChange(e)}
+                  className="block w-full rounded-md border-0 py-1.5 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-row w-96 gap-4 mt-4 justify-start">
+            <Button
+              color={"blue"}
+              fullWidth
+              placeholder={""}
+              onClick={() => handleSearch()}
+            >
+              Appliquer
+            </Button>
+            <Button
+              color={"red"}
+              fullWidth
+              placeholder={""}
+              onClick={() => window.location.reload()}
+            >
+              Reset
+            </Button>
           </div>
         </CardHeader>
         {isLoadingRequests ? (
           <SpinnerLoader size="lg" />
         ) : (
-          <CardBody placeholder={""} className="overflow-scroll px-0">
+          <CardBody placeholder={""} className="overflow-scroll px-0 mt-2">
             <table className="w-full min-w-max table-auto text-left">
               <thead>
                 <tr>
@@ -181,108 +366,120 @@ export function RequestsPage() {
                   ))}
                 </tr>
               </thead>
-              <tbody>
-                {requestsData?.results.map((item, index) => {
-                  const isLast = index === requestsData?.results.length - 1;
-                  const classes = isLast
-                    ? "p-4"
-                    : "p-4 border-b border-blue-gray-50";
+              {!isEmpty(requestsData?.results) ? (
+                <tbody>
+                  {requestsData?.results.map((item, index) => {
+                    const isLast = index === requestsData?.results.length - 1;
+                    const classes = isLast
+                      ? "p-4"
+                      : "p-4 border-b border-blue-gray-50";
 
-                  return (
-                    <tr key={item.id}>
-                      <td className={classes}>
-                        <div className="flex items-center gap-3">
+                    return (
+                      <tr key={item.id}>
+                        <td className={classes}>
+                          <div className="flex items-center gap-3">
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-bold"
+                              placeholder={""}
+                            >
+                              {item.code}
+                            </Typography>
+                          </div>
+                        </td>
+                        <td className={classes}>
                           <Typography
                             variant="small"
                             color="blue-gray"
-                            className="font-bold"
+                            className="font-normal"
                             placeholder={""}
                           >
-                            {item.code}
+                            {item.civility}
                           </Typography>
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                          placeholder={""}
-                        >
-                          {item.civility}
-                        </Typography>
-                      </td>
-                      <td className={classes}>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                          placeholder={""}
-                        >
-                          {item.fullName}
-                        </Typography>
-                      </td>
-                      <td className={classes}>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                          placeholder={""}
-                        >
-                          {item.phoneNumber}
-                        </Typography>
-                      </td>
-                      <td className={classes}>
-                        <div className="w-max">
-                          <Chip
-                            size="sm"
-                            variant="ghost"
-                            value={item.status}
-                            color={"green"}
-                          />
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                          placeholder={""}
-                        >
-                          {item.typeUser}
-                        </Typography>
-                      </td>
-                      <td className={classes}>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                          placeholder={""}
-                        >
-                          {formatDate(item.created_on)}
-                        </Typography>
-                      </td>
-                      <td className={classes}>
-                        <Tooltip content="Plus d'infos">
-                          <IconButton
-                            onClick={() => handleSelectRequest(item)}
-                            variant="text"
+                        </td>
+                        <td className={classes}>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
                             placeholder={""}
                           >
-                            <InformationCircleIcon className="h-8 w-8 text-blue-400" />
-                          </IconButton>
-                        </Tooltip>
-                        {/* <Tooltip content="Supprimer la Demande">
+                            {item.fullName}
+                          </Typography>
+                        </td>
+                        <td className={classes}>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                            placeholder={""}
+                          >
+                            {item.phoneNumber}
+                          </Typography>
+                        </td>
+                        <td className={classes}>
+                          <div className="w-max">
+                            <Chip
+                              size="sm"
+                              variant="ghost"
+                              value={item.status}
+                              color={"green"}
+                            />
+                          </div>
+                        </td>
+                        <td className={classes}>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                            placeholder={""}
+                          >
+                            {item.typeUser}
+                          </Typography>
+                        </td>
+                        <td className={classes}>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                            placeholder={""}
+                          >
+                            {formatDate(item.created_on)}
+                          </Typography>
+                        </td>
+                        <td className={classes}>
+                          <Tooltip content="Plus d'infos">
+                            <IconButton
+                              onClick={() => handleSelectRequest(item)}
+                              variant="text"
+                              placeholder={""}
+                              className=" z-10"
+                            >
+                              <InformationCircleIcon className="h-8 w-8 text-blue-400" />
+                            </IconButton>
+                          </Tooltip>
+                          {/* <Tooltip content="Supprimer la Demande">
                           <IconButton variant="text" placeholder={""}>
                             <TrashIcon className="h-4 w-4 text-red-400" />
                           </IconButton>
                         </Tooltip> */}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
+                        </td>
+                      </tr>
+                    );
+                  })}{" "}
+                </tbody>
+              ) : (
+                <></>
+              )}
             </table>
+            {isEmpty(requestsData?.results) ? (
+              <div className="w-full">
+                <p className="text-center w-full">Aucune données</p>
+              </div>
+            ) : (
+              <></>
+            )}
           </CardBody>
         )}
         <CardFooter
@@ -294,7 +491,7 @@ export function RequestsPage() {
             nextPage={(index) => handleChangePage(index + 1)}
             changePage={handleChangePage}
             totalPages={Math.floor(requestsData?.count! / 10) + 1}
-            page={page}
+            page={page!}
           />
         </CardFooter>
       </Card>
