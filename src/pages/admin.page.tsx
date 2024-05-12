@@ -13,23 +13,35 @@ import Chart from "../components/admin/chart";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { BreadcrumbsMenu } from "../components";
 import { useQuery } from "@tanstack/react-query";
-import { visualizations } from "../core/api/api";
+import { renderAgentPerformances, visualizations } from "../core/api/api";
 import { isEmpty } from "lodash";
+import {
+  ArrowUpOnSquareIcon,
+  DocumentCheckIcon,
+  HandThumbUpIcon,
+  InboxArrowDownIcon,
+  PaperAirplaneIcon,
+  XCircleIcon,
+} from "@heroicons/react/20/solid";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function AdminPage() {
-  const { currentUser } = useAuthContext();
+  const { data: visualizationData, isLoading: isLoadingVisualizations } =
+    useQuery({
+      queryKey: ["all-visualizations"],
+      queryFn: () => visualizations(),
+    });
 
   const {
-    data: visualizationData,
-    isLoading: isLoadingVisualizations,
-    error,
+    data: renderVisualizationData,
+    isLoading: isLoadingRenderVisualizations,
   } = useQuery({
-    queryKey: ["all-visualizations"],
-    queryFn: () => visualizations(),
+    queryKey: ["render-agents-performances"],
+    queryFn: () => renderAgentPerformances(),
   });
-  console.log(visualizationData);
+
+  // console.log(renderVisualizationData);
   return (
     <LayoutContent>
       <>
@@ -39,34 +51,6 @@ export default function AdminPage() {
           path="/dashboard/admin"
         />
         <div className="grid grid-cols-1 gap-4 m-4 sm:grid-cols-4 p-6">
-          <div className="flex items-center bg-white border rounded-sm overflow-hidden shadow">
-            <div className="p-4 bg-green-400">
-              <Send2Icon className="h-12 w-12 text-white" />
-            </div>
-            <div className="px-4 text-gray-700">
-              <h3 className="text-sm tracking-wider">Total Des Demandes</h3>
-              <p className="text-3xl">768</p>
-            </div>
-          </div>
-
-          <div className="flex items-center bg-white border rounded-sm overflow-hidden shadow">
-            <div className="p-4 bg-red-400">
-              <CheckIcon className="h-12 w-12 text-white" />
-            </div>
-            <div className="px-4 text-gray-700">
-              <h3 className="text-sm tracking-wider">Demandes Reussies</h3>
-              <p className="text-3xl">334</p>
-            </div>
-          </div>
-          <div className="flex items-center bg-white border rounded-sm overflow-hidden shadow">
-            <div className="p-4 bg-yellow-400">
-              <RefreshIcon className="h-12 w-12 text-white" />
-            </div>
-            <div className="px-4 text-gray-700">
-              <h3 className="text-sm tracking-wider">Demande en cours</h3>
-              <p className="text-3xl">34</p>
-            </div>
-          </div>
           <div className="flex items-center bg-white border rounded-sm overflow-hidden shadow">
             <div className="p-4 bg-indigo-400">
               <PeopleIcon className="h-12 w-12 text-white" />
@@ -79,12 +63,18 @@ export default function AdminPage() {
           {!isEmpty(visualizationData) ? (
             <>
               <div className="flex items-center bg-white border rounded-sm overflow-hidden shadow">
+                <div className="p-4 bg-green-400">
+                  <Send2Icon className="h-12 w-12 text-white" />
+                </div>
                 <div className="px-4 text-gray-700">
                   <h3 className="text-sm tracking-wider">Soumis</h3>
                   <p className="text-3xl">{visualizationData.STARTED.count} </p>
                 </div>
               </div>
               <div className="flex items-center bg-white border rounded-sm overflow-hidden shadow">
+                <div className="p-4 bg-red-400">
+                  <CheckIcon className="h-12 w-12 text-white" />
+                </div>
                 <div className="px-4 text-gray-700">
                   <h3 className="text-sm tracking-wider">Payé</h3>
                   <p className="text-3xl">{visualizationData.STARTED.count} </p>
@@ -92,6 +82,9 @@ export default function AdminPage() {
               </div>
 
               <div className="flex items-center bg-white border rounded-sm overflow-hidden shadow">
+                <div className="p-4 bg-yellow-400">
+                  <RefreshIcon className="h-12 w-12 text-white" />
+                </div>
                 <div className="px-4 text-gray-700">
                   <h3 className="text-sm tracking-wider">Initié</h3>
                   <p className="text-3xl">
@@ -100,6 +93,9 @@ export default function AdminPage() {
                 </div>
               </div>
               <div className="flex items-center bg-white border rounded-sm overflow-hidden shadow">
+                <div className="p-4 bg-purple-400">
+                  <ArrowUpOnSquareIcon className="h-12 w-12 text-white" />
+                </div>
                 <div className="px-4 text-gray-700">
                   <h3 className="text-sm tracking-wider">Rejeté</h3>
                   <p className="text-3xl">
@@ -108,6 +104,9 @@ export default function AdminPage() {
                 </div>
               </div>
               <div className="flex items-center bg-white border rounded-sm overflow-hidden shadow">
+                <div className="p-4 bg-red-400">
+                  <XCircleIcon className="h-12 w-12 text-white" />
+                </div>
                 <div className="px-4 text-gray-700">
                   <h3 className="text-sm tracking-wider">Erroné</h3>
                   <p className="text-3xl">
@@ -116,6 +115,9 @@ export default function AdminPage() {
                 </div>
               </div>
               <div className="flex items-center bg-white border rounded-sm overflow-hidden shadow">
+                <div className="p-4 bg-blue-400">
+                  <DocumentCheckIcon className="h-12 w-12 text-white" />
+                </div>
                 <div className="px-4 text-gray-700">
                   <h3 className="text-sm tracking-wider">Établi</h3>
                   <p className="text-3xl">
@@ -124,12 +126,18 @@ export default function AdminPage() {
                 </div>
               </div>
               <div className="flex items-center bg-white border rounded-sm overflow-hidden shadow">
+                <div className="p-4 bg-brown-400">
+                  <PaperAirplaneIcon className="h-12 w-12 text-white" />
+                </div>
                 <div className="px-4 text-gray-700">
                   <h3 className="text-sm tracking-wider">Expédié</h3>
                   <p className="text-3xl">{visualizationData.SHIPPED.count} </p>
                 </div>
               </div>
               <div className="flex items-center bg-white border rounded-sm overflow-hidden shadow">
+                <div className="p-4 bg-black">
+                  <InboxArrowDownIcon className="h-12 w-12 text-white" />
+                </div>
                 <div className="px-4 text-gray-700">
                   <h3 className="text-sm tracking-wider">Réceptionné</h3>
                   <p className="text-3xl">
@@ -138,6 +146,9 @@ export default function AdminPage() {
                 </div>
               </div>
               <div className="flex items-center bg-white border rounded-sm overflow-hidden shadow">
+                <div className="p-4 bg-cyan-400">
+                  <HandThumbUpIcon className="h-12 w-12 text-white" />
+                </div>
                 <div className="px-4 text-gray-700">
                   <h3 className="text-sm tracking-wider">Livré</h3>
                   <p className="text-3xl">
