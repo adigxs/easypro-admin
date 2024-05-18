@@ -14,21 +14,17 @@ function App() {
   return (
     <div className="h-screen w-screen">
       <BrowserRouter>
-        <AuthMiddleware>
-          <AuthProvider>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/auth" element={<Login />} />
-              <Route path="/dashboard/admin" element={<AdminPage />} />
-              <Route path="/dashboard/requests" element={<RequestsPage />} />
-              <Route path="/dashboard/agents" element={<AgentPage />} />
-              <Route path="/dashboard/users" element={<UsersPage />} />
-            </Routes>
-          </AuthProvider>
-        </AuthMiddleware>
-        <Routes>
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        </Routes>
+        {/* <AuthMiddleware>   </AuthMiddleware> */}
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/auth" element={<Login />} />
+            <Route path="/dashboard/admin" element={<AdminPage />} />
+            <Route path="/dashboard/requests" element={<RequestsPage />} />
+            <Route path="/dashboard/agents" element={<AgentPage />} />
+            <Route path="/dashboard/users" element={<UsersPage />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
       <ToastContainer />
     </div>

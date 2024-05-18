@@ -21,6 +21,11 @@ export const renderAgentPerformances = async () => {
   return await res.json();
 };
 
+export const renderFinancialReport = async () => {
+  const res = await get("api/visualization/render_financial_report/");
+  return await res.json();
+};
+
 export const createAgent = async (body: AgentRequest) => {
   const res = await post("/agents/", body);
   return await res.json();
