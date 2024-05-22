@@ -53,7 +53,6 @@ export default function AdminPage() {
     queryFn: () => renderFinancialReport(),
   });
 
-  console.log(renderFinancialReportData);
   return (
     <LayoutContent>
       <>
@@ -69,18 +68,36 @@ export default function AdminPage() {
                 <div className="p-4 bg-green-400">
                   <Send2Icon className="h-12 w-12 text-white" />
                 </div>
-                <div className="px-4 text-gray-700">
-                  <h3 className="text-sm tracking-wider">Soumis</h3>
-                  <p className="text-3xl">{visualizationData.STARTED.count} </p>
+                <div className="flex flex-row w-full justify-between">
+                  <div className="px-4 text-gray-700">
+                    <h3 className="text-sm tracking-wider">Soumis</h3>
+                    <p className="text-3xl">
+                      {visualizationData.STARTED.count}{" "}
+                    </p>
+                  </div>
+                  <div className="px-4 text-gray-700">
+                    <p className="text-3xl">
+                      {/* {visualizationData.STARTED.percentage.split(0, 4)} */}
+                    </p>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center bg-white border rounded-sm overflow-hidden shadow">
                 <div className="p-4 bg-red-400">
                   <CheckIcon className="h-12 w-12 text-white" />
                 </div>
-                <div className="px-4 text-gray-700">
-                  <h3 className="text-sm tracking-wider">Payé</h3>
-                  <p className="text-3xl">{visualizationData.STARTED.count} </p>
+                <div className="flex flex-row w-full justify-between">
+                  <div className="px-4 text-gray-700">
+                    <h3 className="text-sm tracking-wider">Payé</h3>
+                    <p className="text-3xl">
+                      {visualizationData.STARTED.count}{" "}
+                    </p>
+                  </div>
+                  <div className="px-4 text-gray-700">
+                    <p className="text-3xl">
+                      {/* {visualizationData.DELIVERED.count} */}
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -88,44 +105,72 @@ export default function AdminPage() {
                 <div className="p-4 bg-yellow-400">
                   <RefreshIcon className="h-12 w-12 text-white" />
                 </div>
-                <div className="px-4 text-gray-700">
-                  <h3 className="text-sm tracking-wider">Initié</h3>
-                  <p className="text-3xl">
-                    {visualizationData.COMMITTED.count}{" "}
-                  </p>
+                <div className="flex flex-row w-full justify-between">
+                  <div className="px-4 text-gray-700">
+                    <h3 className="text-sm tracking-wider">Initié</h3>
+                    <p className="text-3xl">
+                      {visualizationData.COMMITTED.count}{" "}
+                    </p>
+                  </div>
+                  <div className="px-4 text-gray-700">
+                    <p className="text-3xl">
+                      {/* {visualizationData.DELIVERED.count} */}
+                    </p>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center bg-white border rounded-sm overflow-hidden shadow">
                 <div className="p-4 bg-purple-400">
                   <ArrowUpOnSquareIcon className="h-12 w-12 text-white" />
                 </div>
-                <div className="px-4 text-gray-700">
-                  <h3 className="text-sm tracking-wider">Rejeté</h3>
-                  <p className="text-3xl">
-                    {visualizationData.REJECTED.count}{" "}
-                  </p>
+                <div className="flex flex-row w-full justify-between">
+                  <div className="px-4 text-gray-700">
+                    <h3 className="text-sm tracking-wider">Rejeté</h3>
+                    <p className="text-3xl">
+                      {visualizationData.REJECTED.count}{" "}
+                    </p>
+                  </div>
+                  <div className="px-4 text-gray-700">
+                    <p className="text-3xl">
+                      {/* {visualizationData.DELIVERED.count} */}
+                    </p>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center bg-white border rounded-sm overflow-hidden shadow">
                 <div className="p-4 bg-red-400">
                   <XCircleIcon className="h-12 w-12 text-white" />
                 </div>
-                <div className="px-4 text-gray-700">
-                  <h3 className="text-sm tracking-wider">Erroné</h3>
-                  <p className="text-3xl">
-                    {visualizationData.INCORRECT.count}{" "}
-                  </p>
+                <div className="flex flex-row w-full justify-between">
+                  <div className="px-4 text-gray-700">
+                    <h3 className="text-sm tracking-wider">Erroné</h3>
+                    <p className="text-3xl">
+                      {visualizationData.INCORRECT.count}{" "}
+                    </p>
+                  </div>
+                  <div className="px-4 text-gray-700">
+                    <p className="text-3xl">
+                      {/* {visualizationData.DELIVERED.count} */}
+                    </p>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center bg-white border rounded-sm overflow-hidden shadow">
                 <div className="p-4 bg-blue-400">
                   <DocumentCheckIcon className="h-12 w-12 text-white" />
                 </div>
-                <div className="px-4 text-gray-700">
-                  <h3 className="text-sm tracking-wider">Établi</h3>
-                  <p className="text-3xl">
-                    {visualizationData.COMPLETED.count}{" "}
-                  </p>
+                <div className="flex flex-row w-full justify-between">
+                  <div className="px-4 text-gray-700">
+                    <h3 className="text-sm tracking-wider">Établi</h3>
+                    <p className="text-3xl">
+                      {visualizationData.COMPLETED.count}{" "}
+                    </p>
+                  </div>
+                  <div className="px-4 text-gray-700">
+                    <p className="text-3xl">
+                      {/* {visualizationData.DELIVERED.count} */}
+                    </p>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center bg-white border rounded-sm overflow-hidden shadow">
@@ -141,22 +186,36 @@ export default function AdminPage() {
                 <div className="p-4 bg-black">
                   <InboxArrowDownIcon className="h-12 w-12 text-white" />
                 </div>
-                <div className="px-4 text-gray-700">
-                  <h3 className="text-sm tracking-wider">Réceptionné</h3>
-                  <p className="text-3xl">
-                    {visualizationData.RECEIVED.count}{" "}
-                  </p>
+                <div className="flex flex-row w-full justify-between">
+                  <div className="px-4 text-gray-700">
+                    <h3 className="text-sm tracking-wider">Réceptionné</h3>
+                    <p className="text-3xl">
+                      {visualizationData.RECEIVED.count}{" "}
+                    </p>
+                  </div>
+                  <div className="px-4 text-gray-700">
+                    <p className="text-3xl">
+                      {/* {visualizationData.DELIVERED.count} */}
+                    </p>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center bg-white border rounded-sm overflow-hidden shadow">
                 <div className="p-4 bg-cyan-400">
                   <HandThumbUpIcon className="h-12 w-12 text-white" />
                 </div>
-                <div className="px-4 text-gray-700">
-                  <h3 className="text-sm tracking-wider">Livré</h3>
-                  <p className="text-3xl">
-                    {visualizationData.DELIVERED.count}{" "}
-                  </p>
+                <div className="flex flex-row w-full justify-between">
+                  <div className="px-4 text-gray-700">
+                    <h3 className="text-sm tracking-wider">Livré</h3>
+                    <p className="text-3xl">
+                      {visualizationData.DELIVERED.count}
+                    </p>
+                  </div>
+                  <div className="px-4 text-gray-700">
+                    <p className="text-3xl">
+                      {/* {visualizationData.DELIVERED.count} */}
+                    </p>
+                  </div>
                 </div>
               </div>
             </>
