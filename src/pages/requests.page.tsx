@@ -183,7 +183,7 @@ export function RequestsPage() {
           >
             Filtre de recherche
           </Typography>
-          <div className="grid grid-cols-5 w-full shrink-0 gap-2 md:w-max">
+          <div className="grid grid-cols-3 xl:grid-cols-5 w-full shrink-0 gap-2 md:w-max">
             <SelectedSearch
               label="Région"
               query={region}
@@ -237,52 +237,54 @@ export function RequestsPage() {
                         leaveTo="opacity-0"
                       >
                         <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                          {requestStatus.map((item) => (
-                            <Listbox.Option
-                              key={item.value}
-                              className={({ active }) =>
-                                classNames(
-                                  active
-                                    ? "bg-green-600 text-white"
-                                    : "text-gray-900",
-                                  "relative cursor-default select-none py-2 pl-3 pr-9"
-                                )
-                              }
-                              value={item}
-                              onClick={() => setStatus(item.value)}
-                            >
-                              {({ selected, active }) => (
-                                <>
-                                  <span
-                                    className={classNames(
-                                      selected
-                                        ? "font-semibold"
-                                        : "font-normal",
-                                      "block truncate"
-                                    )}
-                                  >
-                                    {item.name}
-                                  </span>
-
-                                  {selected ? (
+                          {requestStatus
+                            .filter((it) => it.value !== "STARTED")
+                            .map((item) => (
+                              <Listbox.Option
+                                key={item.value}
+                                className={({ active }) =>
+                                  classNames(
+                                    active
+                                      ? "bg-green-600 text-white"
+                                      : "text-gray-900",
+                                    "relative cursor-default select-none py-2 pl-3 pr-9"
+                                  )
+                                }
+                                value={item}
+                                onClick={() => setStatus(item.value)}
+                              >
+                                {({ selected, active }) => (
+                                  <>
                                     <span
                                       className={classNames(
-                                        active
-                                          ? "text-white"
-                                          : "text-green-600",
-                                        "absolute inset-y-0 right-0 flex items-center pr-4"
+                                        selected
+                                          ? "font-semibold"
+                                          : "font-normal",
+                                        "block truncate"
                                       )}
                                     >
-                                      <CheckIcon
-                                        className="h-5 w-5"
-                                        aria-hidden="true"
-                                      />
+                                      {item.name}
                                     </span>
-                                  ) : null}
-                                </>
-                              )}
-                            </Listbox.Option>
-                          ))}
+
+                                    {selected ? (
+                                      <span
+                                        className={classNames(
+                                          active
+                                            ? "text-white"
+                                            : "text-green-600",
+                                          "absolute inset-y-0 right-0 flex items-center pr-4"
+                                        )}
+                                      >
+                                        <CheckIcon
+                                          className="h-5 w-5"
+                                          aria-hidden="true"
+                                        />
+                                      </span>
+                                    ) : null}
+                                  </>
+                                )}
+                              </Listbox.Option>
+                            ))}
                         </Listbox.Options>
                       </Transition>
                     </div>
@@ -423,7 +425,11 @@ export function RequestsPage() {
                             <Chip
                               size="sm"
                               variant="ghost"
-                              value={item.status}
+                              value={
+                                requestStatus.find(
+                                  (it) => it.value === item.status
+                                )?.name!
+                              }
                               color={"green"}
                             />
                           </div>

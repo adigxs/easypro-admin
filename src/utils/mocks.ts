@@ -349,8 +349,8 @@ export const centralFiles = () => {
 export const requestStatus = [
   { value: "Sélectionner", name: "Sélectionner" },
   { value: "STARTED", name: "Soumis" },
-  { value: "STARTED", name: "Payé" },
-  { value: "COMMITED", name: "Initié" },
+  { value: "PENDING", name: "Soumis" },
+  { value: "COMMITTED", name: "Initié" },
   { value: "REJECTED", name: "Rejeté" },
   { value: "INCORRECT", name: "Erroné" },
   { value: "COMPLETED", name: "Établi" },

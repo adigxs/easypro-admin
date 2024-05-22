@@ -22,7 +22,7 @@ export default function LayoutContent({ children }: LayoutContentProps) {
         <section
           className={classNames(
             { "w-screen ": closeAside },
-            { "w-full md:ml-40": !closeAside },
+            { "w-full md:ml-24 xl:ml-40": !closeAside },
             " transition-all duration-700 ease-in-out  z-10 h-screen md:h-screen bg-white mt-16 rounded-lg"
           )}
         >
