@@ -56,7 +56,7 @@ const TABLE_HEAD = [
   "Actions",
 ];
 
-export function RequestsPage() {
+export function RequestsStartedPage() {
   const [query, setQuery] = React.useState<string>("");
   const [selected, setSelected] = React.useState<{
     value: string;
@@ -81,7 +81,7 @@ export function RequestsPage() {
     error,
   } = useQuery<RequestPaginate>({
     queryKey: ["all-requests", query],
-    queryFn: () => getAllRequests(query),
+    queryFn: () => getAllRequests(`?status=STARTED&${query}`),
   });
 
   const handleChangePage = (item: number) => {
@@ -130,7 +130,7 @@ export function RequestsPage() {
     }
     setPage(null);
     // console.log(`?${trimEnd(queryParams, "&")}`);
-    setQuery(`?${trimEnd(queryParams, "&")}`);
+    setQuery(`${trimEnd(queryParams, "&")}`);
   };
 
   const handleStartDateChange = (event: any) => {
@@ -147,7 +147,7 @@ export function RequestsPage() {
     <LayoutContent>
       <BreadcrumbsMenu
         label="EasyPro Admin"
-        name="Demandes Traitées"
+        name="Demandes Créées"
         path="/dashboard/requests"
       />
       <Card placeholder={""} className=" shadow-none w-full">
@@ -171,7 +171,7 @@ export function RequestsPage() {
                 color="gray"
                 className="mt-1 font-normal"
               >
-                Consulter l'ensemble des demandes traitées
+                Consulter l'ensemble des demandes créées
               </Typography>
             </div>
           </div>
@@ -208,90 +208,6 @@ export function RequestsPage() {
               onSelectQuery={(item) => setCentralFile(item)}
               items={centralFiles()}
             />
-
-            <div>
-              <Listbox value={selected} onChange={setSelected}>
-                {({ open }) => (
-                  <>
-                    <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">
-                      Statut
-                    </Listbox.Label>
-                    <div className="relative mt-2">
-                      <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 sm:text-sm sm:leading-6">
-                        <span className="block truncate">
-                          {!isEmpty(selected) ? selected.name : "Sélectionner"}
-                        </span>
-                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                          <ChevronUpDownIcon
-                            className="h-5 w-5 text-gray-400"
-                            aria-hidden="true"
-                          />
-                        </span>
-                      </Listbox.Button>
-
-                      <Transition
-                        show={open}
-                        as={Fragment}
-                        leave="transition ease-in duration-100"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                      >
-                        <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                          {requestStatus
-                            .filter((it) => it.value !== "STARTED")
-                            .map((item) => (
-                              <Listbox.Option
-                                key={item.value}
-                                className={({ active }) =>
-                                  classNames(
-                                    active
-                                      ? "bg-green-600 text-white"
-                                      : "text-gray-900",
-                                    "relative cursor-default select-none py-2 pl-3 pr-9"
-                                  )
-                                }
-                                value={item}
-                                onClick={() => setStatus(item.value)}
-                              >
-                                {({ selected, active }) => (
-                                  <>
-                                    <span
-                                      className={classNames(
-                                        selected
-                                          ? "font-semibold"
-                                          : "font-normal",
-                                        "block truncate"
-                                      )}
-                                    >
-                                      {item.name}
-                                    </span>
-
-                                    {selected ? (
-                                      <span
-                                        className={classNames(
-                                          active
-                                            ? "text-white"
-                                            : "text-green-600",
-                                          "absolute inset-y-0 right-0 flex items-center pr-4"
-                                        )}
-                                      >
-                                        <CheckIcon
-                                          className="h-5 w-5"
-                                          aria-hidden="true"
-                                        />
-                                      </span>
-                                    ) : null}
-                                  </>
-                                )}
-                              </Listbox.Option>
-                            ))}
-                        </Listbox.Options>
-                      </Transition>
-                    </div>
-                  </>
-                )}
-              </Listbox>
-            </div>
 
             <div>
               <label
@@ -370,128 +286,119 @@ export function RequestsPage() {
               </thead>
               {!isEmpty(requestsData?.results) ? (
                 <tbody>
-                  {requestsData!.results.filter(
-                    (it: any) => it.status !== "STARTED"
-                  ).length > 0 ? (
-                    requestsData?.results
-                      .filter((it: any) => it.status !== "STARTED")
-                      .map((item, index) => {
-                        const isLast =
-                          index === requestsData?.results.length - 1;
-                        const classes = isLast
-                          ? "p-4"
-                          : "p-4 border-b border-blue-gray-50";
+                  {requestsData?.results.length! > 0 ? (
+                    requestsData?.results.map((item, index) => {
+                      const isLast = index === requestsData?.results.length - 1;
+                      const classes = isLast
+                        ? "p-4"
+                        : "p-4 border-b border-blue-gray-50";
 
-                        return (
-                          <tr key={item.id}>
-                            <td className={classes}>
-                              <div className="flex items-center gap-3">
-                                <Typography
-                                  variant="small"
-                                  color="blue-gray"
-                                  className="font-bold"
-                                  placeholder={""}
-                                >
-                                  {item.code}
-                                </Typography>
-                              </div>
-                            </td>
-                            <td className={classes}>
+                      return (
+                        <tr key={item.id}>
+                          <td className={classes}>
+                            <div className="flex items-center gap-3">
                               <Typography
                                 variant="small"
                                 color="blue-gray"
-                                className="font-normal"
+                                className="font-bold"
                                 placeholder={""}
                               >
-                                {item.civility}
+                                {item.code}
                               </Typography>
-                            </td>
-                            <td className={classes}>
-                              <Typography
-                                variant="small"
-                                color="blue-gray"
-                                className="font-normal"
+                            </div>
+                          </td>
+                          <td className={classes}>
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal"
+                              placeholder={""}
+                            >
+                              {item.civility}
+                            </Typography>
+                          </td>
+                          <td className={classes}>
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal"
+                              placeholder={""}
+                            >
+                              {item.fullName}
+                            </Typography>
+                          </td>
+                          <td className={classes}>
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal"
+                              placeholder={""}
+                            >
+                              {item.phoneNumber}
+                            </Typography>
+                          </td>
+                          <td className={classes}>
+                            <div className="w-max">
+                              <Chip
+                                size="sm"
+                                variant="ghost"
+                                value={
+                                  requestStatus.find(
+                                    (it) => it.value === item.status
+                                  )?.name!
+                                }
+                                color={"green"}
+                              />
+                            </div>
+                          </td>
+                          <td className={classes}>
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal"
+                              placeholder={""}
+                            >
+                              {item.typeUser}
+                            </Typography>
+                          </td>
+                          <td className={classes}>
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal"
+                              placeholder={""}
+                            >
+                              {formatDate(item.created_on)}
+                            </Typography>
+                          </td>
+                          <td className={classes}>
+                            <Tooltip content="Plus d'infos">
+                              <IconButton
+                                onClick={() => handleSelectRequest(item)}
+                                variant="text"
                                 placeholder={""}
+                                className=" z-10"
                               >
-                                {item.fullName}
-                              </Typography>
-                            </td>
-                            <td className={classes}>
-                              <Typography
-                                variant="small"
-                                color="blue-gray"
-                                className="font-normal"
-                                placeholder={""}
-                              >
-                                {item.phoneNumber}
-                              </Typography>
-                            </td>
-                            <td className={classes}>
-                              <div className="w-max">
-                                <Chip
-                                  size="sm"
-                                  variant="ghost"
-                                  value={
-                                    requestStatus.find(
-                                      (it) => it.value === item.status
-                                    )?.name!
-                                  }
-                                  color={"green"}
-                                />
-                              </div>
-                            </td>
-                            <td className={classes}>
-                              <Typography
-                                variant="small"
-                                color="blue-gray"
-                                className="font-normal"
-                                placeholder={""}
-                              >
-                                {item.typeUser}
-                              </Typography>
-                            </td>
-                            <td className={classes}>
-                              <Typography
-                                variant="small"
-                                color="blue-gray"
-                                className="font-normal"
-                                placeholder={""}
-                              >
-                                {formatDate(item.created_on)}
-                              </Typography>
-                            </td>
-                            <td className={classes}>
-                              <Tooltip content="Plus d'infos">
-                                <IconButton
-                                  onClick={() => handleSelectRequest(item)}
-                                  variant="text"
-                                  placeholder={""}
-                                  className=" z-10"
-                                >
-                                  <InformationCircleIcon className="h-8 w-8 text-blue-400" />
-                                </IconButton>
-                              </Tooltip>
-                              {/* <Tooltip content="Supprimer la Demande">
+                                <InformationCircleIcon className="h-8 w-8 text-blue-400" />
+                              </IconButton>
+                            </Tooltip>
+                            {/* <Tooltip content="Supprimer la Demande">
                           <IconButton variant="text" placeholder={""}>
                             <TrashIcon className="h-4 w-4 text-red-400" />
                           </IconButton>
                         </Tooltip> */}
-                            </td>
-                          </tr>
-                        );
-                      })
+                          </td>
+                        </tr>
+                      );
+                    })
                   ) : (
-                    <>
-                      <tr className="text-center">
-                        <td colSpan={8}>Aucune données</td>{" "}
-                      </tr>
-                    </>
-                  )}
+                    <tr className="text-center">
+                      <td colSpan={8}>Aucune données</td>{" "}
+                    </tr>
+                  )}{" "}
                 </tbody>
               ) : (
-                <>
-                  <p>Aucune données</p>
-                </>
+                <></>
               )}
             </table>
             {isEmpty(requestsData?.results) ? (
@@ -507,19 +414,13 @@ export function RequestsPage() {
           placeholder={""}
           className="hidden md:flex items-center justify-center border-t border-blue-gray-50 p-4"
         >
-          {!isEmpty(requestsData?.results) &&
-          requestsData?.results.filter((it: any) => it.status !== "STARTED")
-            .length! > 0 ? (
-            <PaginationCustom
-              prevPage={(index) => handleChangePage(index - 1)}
-              nextPage={(index) => handleChangePage(index + 1)}
-              changePage={handleChangePage}
-              totalPages={Math.floor(requestsData?.count! / 10) + 1}
-              page={page!}
-            />
-          ) : (
-            <></>
-          )}
+          <PaginationCustom
+            prevPage={(index) => handleChangePage(index - 1)}
+            nextPage={(index) => handleChangePage(index + 1)}
+            changePage={handleChangePage}
+            totalPages={Math.floor(requestsData?.count! / 10) + 1}
+            page={page!}
+          />
         </CardFooter>
       </Card>
       {!isEmpty(request) ? (

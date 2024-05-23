@@ -179,7 +179,13 @@ export const regionsDepartments: RegionDepartment[] = [
       "Haut-Nyong",
       "Kadey",
       "Lom-et-Djérem",
-      "Djoum",
+    ],
+    court: [
+      "Sélectionner",
+      "TPGI Abong-Mbang",
+      "TPGI Batouri",
+      "TPGI Yokadouma",
+      "TPGI Bertoua",
     ],
   },
   {
@@ -199,6 +205,10 @@ export const regionsDepartments: RegionDepartment[] = [
       "TPI Maroua",
       "TPI Makary",
       "TPI Doukoula",
+      "TPGI MORA",
+      "TPGI KOUSSERI",
+      "TPGI MOKOLO",
+      "TPGI YAGOUA",
     ],
   },
   {
@@ -217,14 +227,7 @@ export const regionsDepartments: RegionDepartment[] = [
   },
   {
     region: "Nord",
-    departments: [
-      "Sélectionner",
-      "Bénoué",
-      "Faro",
-      "Mayo-Louti",
-      "Mayo-Rey",
-      "Mayo-Tsanaga",
-    ],
+    departments: ["Sélectionner", "Bénoué", "Faro", "Mayo-Louti", "Mayo-Rey"],
     court: [
       "Sélectionner",
       "TPGI Guider",
@@ -269,10 +272,11 @@ export const regionsDepartments: RegionDepartment[] = [
       "Menoua",
       "Mifi",
       "Ndé",
+      "Haut-Nkam",
+      "Noun",
     ],
     court: [
       "Sélectionner",
-      "TPGI Foumban",
       "TPGI Bafang",
       "TPGI Bagangté",
       "TPGI Dschang",
@@ -286,7 +290,14 @@ export const regionsDepartments: RegionDepartment[] = [
   },
   {
     region: "Sud",
-    departments: ["Sélectionner", "Dja-et-Lobo", "Mvila", "Ntem", "Ocean"],
+    departments: [
+      "Sélectionner",
+      "Dja-et-Lobo",
+      "Mvila",
+      "Vallée-du-Ntem",
+      "Djoum",
+      "Ocean",
+    ],
     court: [
       "Sélectionner",
       "TPGI Ambam",
@@ -349,7 +360,7 @@ export const centralFiles = () => {
 export const requestStatus = [
   { value: "Sélectionner", name: "Sélectionner" },
   { value: "STARTED", name: "Soumis" },
-  { value: "PENDING", name: "Soumis" },
+  // { value: "PENDING", name: "Soumis" },
   { value: "COMMITTED", name: "Initié" },
   { value: "REJECTED", name: "Rejeté" },
   { value: "INCORRECT", name: "Erroné" },

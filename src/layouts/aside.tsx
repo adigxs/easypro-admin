@@ -15,8 +15,13 @@ const navigations = [
   },
   {
     icon: Send2Icon,
+    href: "/dashboard/requests-started",
+    name: "Demandes Créées",
+  },
+  {
+    icon: Send2Icon,
     href: "/dashboard/requests",
-    name: "Demandes",
+    name: "Demandes Traitées",
   },
   {
     icon: PeopleIcon,
@@ -60,7 +65,7 @@ export default function Aside({ close }: AsideProps) {
               <span
                 className={classNames(
                   { "text-white": location.pathname === item.href },
-                  "group-hover:text-white"
+                  "group-hover:text-white text-center"
                 )}
               >
                 {item.name}
