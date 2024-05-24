@@ -171,7 +171,7 @@ export function RequestsPage() {
                 color="gray"
                 className="mt-1 font-normal"
               >
-                Consulter l'ensemble des demandes traitées
+                Consulter l'ensemble des demandes a traiter
               </Typography>
             </div>
           </div>
