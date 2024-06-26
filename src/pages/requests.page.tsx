@@ -82,6 +82,7 @@ export function RequestsPage() {
   } = useQuery<RequestPaginate>({
     queryKey: ["all-requests", query],
     queryFn: () => getAllRequests(query),
+    // queryFn: () => getAllRequests(`?status=PENDING&${query}`),
   });
 
   const handleChangePage = (item: number) => {
@@ -505,11 +506,9 @@ export function RequestsPage() {
         )}
         <CardFooter
           placeholder={""}
-          className="hidden md:flex items-center justify-center border-t border-blue-gray-50 p-4"
+          className="hidden md:flex items-center justify-center p-4"
         >
-          {!isEmpty(requestsData?.results) &&
-          requestsData?.results.filter((it: any) => it.status !== "STARTED")
-            .length! > 0 ? (
+          {!isEmpty(requestsData?.results) ? (
             <PaginationCustom
               prevPage={(index) => handleChangePage(index - 1)}
               nextPage={(index) => handleChangePage(index + 1)}

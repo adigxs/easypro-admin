@@ -82,7 +82,7 @@ export default function AdminPage() {
                   <div className="px-4 text-gray-700">
                     <h3 className="text-sm tracking-wider">Payé</h3>
                     <p className="text-3xl">
-                      {visualizationData.STARTED.count}{" "}
+                      {visualizationData.PENDING.count}{" "}
                     </p>
                   </div>
                   <div className="px-4 text-gray-700">

@@ -412,7 +412,7 @@ export function RequestsStartedPage() {
         )}
         <CardFooter
           placeholder={""}
-          className="hidden md:flex items-center justify-center border-t border-blue-gray-50 p-4"
+          className="hidden md:flex items-center justify-center p-4"
         >
           <PaginationCustom
             prevPage={(index) => handleChangePage(index - 1)}

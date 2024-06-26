@@ -22,7 +22,7 @@ const navigations = [
   {
     icon: Send2Icon,
     href: "/dashboard/requests",
-    name: "Demandes Traitées",
+    name: "Demandes en Traitement",
   },
   {
     icon: CoinIcon,
