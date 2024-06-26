@@ -10,6 +10,7 @@ import { UsersPage } from "./pages/users.page";
 import { ToastContainer } from "react-toastify";
 import PrivacyPolicy from "./pages/privacy-policy";
 import { RequestsStartedPage } from "./pages/requests.started.page";
+import ComptaPage from "./pages/compta.page";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               path="/dashboard/requests-started"
               element={<RequestsStartedPage />}
             />
+            <Route path="/dashboard/compta" element={<ComptaPage />} />
             <Route path="/dashboard/agents" element={<AgentPage />} />
             <Route path="/dashboard/users" element={<UsersPage />} />
           </Routes>

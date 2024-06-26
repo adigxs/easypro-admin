@@ -54,3 +54,43 @@ export interface RegionDepartment {
   departments: string[];
   court?: string[];
 }
+
+export interface PaymentData {
+  date: string;
+  total_request_count: number;
+  total_amount: number;
+  "orange-money": MoneyData;
+  "mtn-momo": MoneyData;
+  regions: RegionData[];
+  companies: CompanyData[];
+  agents: AgentData[];
+  courts: CourtData[];
+}
+
+interface MoneyData {
+  total_amount: number;
+  percentage: number;
+}
+
+interface RegionData {
+  name: string | null;
+  total_amount: number;
+  total_request_count: number;
+}
+
+interface CompanyData {
+  name: string;
+  total_amount: number;
+}
+
+interface AgentData {
+  name: string;
+  total_amount: number;
+  total_request_count: number;
+}
+
+interface CourtData {
+  name: string;
+  total_amount: number;
+  total_request_count: number;
+}

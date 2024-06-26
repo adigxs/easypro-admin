@@ -3,6 +3,7 @@ import { CheckIcon } from "./check-icon";
 import { ChevronDownIcon } from "./chevron-down-icon";
 import { ChevronIcon } from "./chevron-icon";
 import { CloseIcon } from "./close-icon";
+import { CoinIcon } from "./coin-icon";
 import { EditIcon } from "./edit-icon";
 import { EmailIcon } from "./email-icon";
 import { FrameIcon } from "./frame-icon";
@@ -42,4 +43,5 @@ export {
   Send2Icon,
   RefreshIcon,
   LogoutIcon,
+  CoinIcon,
 };

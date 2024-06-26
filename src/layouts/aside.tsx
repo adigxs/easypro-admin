@@ -1,5 +1,6 @@
 import { useLocation } from "react-router-dom";
 import {
+  CoinIcon,
   GroupIcon,
   PeopleIcon,
   Profile2Icon,
@@ -22,6 +23,11 @@ const navigations = [
     icon: Send2Icon,
     href: "/dashboard/requests",
     name: "Demandes Traitées",
+  },
+  {
+    icon: CoinIcon,
+    href: "/dashboard/compta",
+    name: "Comptabilité",
   },
   {
     icon: PeopleIcon,
@@ -53,7 +59,7 @@ export default function Aside({ close }: AsideProps) {
               href={item.href}
               className={classNames(
                 { "bg-primary-100": location.pathname === item.href },
-                "flex flex-col justify-center items-center group hover:bg-primary-100/80 cursor-pointer rounded-md"
+                "flex flex-col justify-center items-center group hover:bg-primary-100/80 cursor-pointer rounded-xs"
               )}
             >
               <item.icon

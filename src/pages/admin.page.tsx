@@ -45,14 +45,6 @@ export default function AdminPage() {
     queryFn: () => renderAgentPerformances(),
   });
 
-  const {
-    data: renderFinancialReportData,
-    isLoading: isLoadingrenderFinancialReports,
-  } = useQuery({
-    queryKey: ["financial-report"],
-    queryFn: () => renderFinancialReport(),
-  });
-
   return (
     <LayoutContent>
       <>

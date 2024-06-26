@@ -55,6 +55,6 @@ export const updateUserPassword = async (
 };
 
 export const getAllRequests = async (query?: string) => {
-  const res = await get(`/requests/${query}`);
+  const res = await get(`requests/${query}`);
   return await res.json();
 };

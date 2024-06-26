@@ -31,8 +31,8 @@ const userNavigation = [
 ];
 
 export default function Header({ closeAside }: HeaderProps) {
-  const { signOut } = useAuthContext();
-
+  const { currentUser, signOut } = useAuthContext();
+  console.log(currentUser);
   return (
     <header className="text-gray-600 body-font bg-white fixed w-full top-0 z-50">
       <div className="w-full flex flex-wrap px-4 py-2 flex-row justify-between items-center">

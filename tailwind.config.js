@@ -43,7 +43,8 @@ module.exports = withMT({
           80: "#64748B",
           90: "#53668E",
           100: "#2F394E"
-        }
+        },
+        "sub-heading": "#5d6679",
       }
     },
   },
