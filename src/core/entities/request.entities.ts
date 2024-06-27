@@ -40,6 +40,8 @@ export interface RequestResponse {
   created_on: string;
   destination_address: string;
   destination_location: string;
+  user_marital_status: string;
+  user_occupation: string;
 }
 export interface RequestPaginate {
   results: RequestResponse[];

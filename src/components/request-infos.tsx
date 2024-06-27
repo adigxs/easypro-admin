@@ -22,10 +22,10 @@ export function RequestInfos({ open, handleOpen, request }: RequestInfosProps) {
   return (
     <>
       <Dialog
-        size="xs"
+        size="md"
         open={open}
         handler={handleOpen}
-        className="bg-transparent shadow-none relative"
+        className=" shadow-none relative"
         placeholder={""}
       >
         <div className="flex items-center gap-2 bg-gray-500 rounded-lg absolute right-0 -top-4 z-50">
@@ -38,7 +38,7 @@ export function RequestInfos({ open, handleOpen, request }: RequestInfosProps) {
             <XMarkIcon color="white" className="h-6" />
           </IconButton>
         </div>
-        <Card className="mx-auto w-full max-w-[24rem]" placeholder={""}>
+        <Card className="mx-auto w-full" placeholder={""}>
           <CardBody className="flex flex-col gap-4" placeholder={""}>
             <Typography variant="h5" color="blue-gray" placeholder={""}>
               Requette: {request.code}
@@ -97,7 +97,26 @@ export function RequestInfos({ open, handleOpen, request }: RequestInfosProps) {
                 Email:{" "}
               </Typography>
               <span className="font-semibold text-black">{request.email}</span>
-
+              <Typography
+                className="-mb-2 text-base font-medium"
+                placeholder={""}
+              >
+                Statut matrimonial:{" "}
+              </Typography>
+              <span className="font-semibold text-black">
+                {request.user_marital_status === "MARRIED"
+                  ? "Marié(e)"
+                  : "Célibataire"}
+              </span>
+              <Typography
+                className="-mb-2 text-base font-medium"
+                placeholder={""}
+              >
+                Profession:{" "}
+              </Typography>
+              <span className="font-semibold text-black">
+                {request.user_occupation}
+              </span>
               <Typography
                 className="-mb-2 text-base font-medium"
                 placeholder={""}
@@ -168,15 +187,6 @@ export function RequestInfos({ open, handleOpen, request }: RequestInfosProps) {
               </Typography>
               <span className="font-semibold text-black">
                 {request.criminalRecordNumber}
-              </span>
-              <Typography
-                className="-mb-2 text-base font-medium"
-                placeholder={""}
-              >
-                Civilité:{" "}
-              </Typography>
-              <span className="font-semibold text-black">
-                {request.civility}
               </span>
             </div>
           </CardBody>
