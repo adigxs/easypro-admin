@@ -209,7 +209,7 @@ export function RequestsPage() {
               items={centralFiles()}
             />
 
-            <div>
+            {/* <div>
               <Listbox value={selected} onChange={setSelected}>
                 {({ open }) => (
                   <>
@@ -291,7 +291,7 @@ export function RequestsPage() {
                   </>
                 )}
               </Listbox>
-            </div>
+            </div> */}
 
             <div>
               <label
