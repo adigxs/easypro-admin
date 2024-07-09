@@ -130,7 +130,7 @@ export function RequestsPage() {
     }
     setPage(null);
     // console.log(`?${trimEnd(queryParams, "&")}`);
-    setQuery(`?${trimEnd(queryParams, "&")}`);
+    setQuery(`${trimEnd(queryParams, "&")}`);
   };
 
   const handleStartDateChange = (event: any) => {
@@ -489,9 +489,7 @@ export function RequestsPage() {
                   )}
                 </tbody>
               ) : (
-                <>
-                  <p>Aucune données</p>
-                </>
+                <></>
               )}
             </table>
             {isEmpty(requestsData?.results) ? (
