@@ -81,8 +81,7 @@ export function RequestsPage() {
     error,
   } = useQuery<RequestPaginate>({
     queryKey: ["all-requests", query],
-    queryFn: () => getAllRequests(query),
-    // queryFn: () => getAllRequests(`?status=PENDING&${query}`),
+    queryFn: () => getAllRequests(`?status=PENDING&${query}`),
   });
 
   const handleChangePage = (item: number) => {
