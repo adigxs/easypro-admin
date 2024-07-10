@@ -86,7 +86,7 @@ export function RequestsStartedPage() {
 
   const handleChangePage = (item: number) => {
     setPage(item);
-    setQuery(`?page=${item}`);
+    setQuery(`page=${item}`);
   };
 
   const handleSelectRequest = React.useCallback((item: RequestResponse) => {
