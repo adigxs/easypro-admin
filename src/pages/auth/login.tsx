@@ -31,7 +31,6 @@ export default function Login() {
     },
     onSuccess(data) {
       if (data.success) {
-        console.log(data);
         const user = data.user as UserLoginResponse;
         const token = data.token as string;
         Cookies.set(BEARER_TOKEN, token, { path: "/" });

@@ -86,7 +86,7 @@ export function RequestsStartedPage() {
 
   const handleChangePage = (item: number) => {
     setPage(item);
-    setQuery(`page=${item}`);
+    setQuery((prevQuery) => `${prevQuery}&page=${item}`);
   };
 
   const handleSelectRequest = React.useCallback((item: RequestResponse) => {
@@ -94,19 +94,22 @@ export function RequestsStartedPage() {
     setOpenInfoModal(true);
   }, []);
 
-  const handleRegion = React.useCallback(
-    (item: string) => {
-      setRegion(item);
-      setDepartmentList(getDepartmentsByRegion(item));
-      setCourtList(getCourtByRegion(item));
-    },
-    [departmentList, courtList]
-  );
+  const handleRegion = React.useCallback((item: string) => {
+    setRegion(item);
+    setDepartmentList(getDepartmentsByRegion(item));
+    setCourtList(getCourtByRegion(item));
+    setDepartment("");
+    setCourt("");
+    setCentralFile("");
+    setStatus("");
+    setStartDate("");
+    setEndDate("");
+  }, []);
 
   const handleSearch = () => {
     let queryParams = "";
 
-    if (!isEmpty(region)) {
+    if (region) {
       queryParams += `region_name=${region}&`;
     }
     if (department !== "Sélectionner") {
@@ -118,19 +121,19 @@ export function RequestsStartedPage() {
     if (centralFile !== "Sélectionner") {
       queryParams += `central_file=${centralFile}&`;
     }
-    if (!_.isEmpty(startDate)) {
+    if (startDate) {
       queryParams += `start_date=${startDate}&`;
     }
-    if (!_.isEmpty(endDate)) {
+    if (endDate) {
       queryParams += `end_date=${endDate}&`;
     }
-    if (!isEmpty(status)) {
+    if (status) {
       const statusValue = _.find(requestStatus, { name: status })?.value || "";
       queryParams += `status=${statusValue}&`;
     }
-    setPage(null);
-    // console.log(`?${trimEnd(queryParams, "&")}`);
-    setQuery(`${trimEnd(queryParams, "&")}`);
+
+    setPage(1); // Reset to first page when performing a new search
+    setQuery(queryParams.slice(0, -1)); // Remove the trailing '&'
   };
 
   const handleStartDateChange = (event: any) => {
