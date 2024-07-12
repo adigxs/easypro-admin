@@ -55,3 +55,13 @@ export const formatDate = (param: string) => {
   const parsedDate = DateTime.fromISO(param);
   return parsedDate.toFormat("dd, MM yyyy");
 };
+
+export const formatHour = (param: string) => {
+  const parsedDate = DateTime.fromISO(param);
+  const formattedHour = parsedDate.toFormat("HH");
+  const formattedMinute = parsedDate.toFormat("mm");
+
+  return formattedMinute === "00"
+    ? `${formattedHour}h`
+    : `${formattedHour}h${formattedMinute}`;
+};

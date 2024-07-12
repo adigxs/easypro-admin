@@ -23,10 +23,10 @@ import {
   RequestPaginate,
   RequestResponse,
 } from "../core/entities/request.entities";
-import React, { Fragment } from "react";
+import React, { Fragment, useMemo } from "react";
 import { SpinnerLoader } from "../components/spinner-loader";
 import { PaginationCustom } from "../components/pagination-custom";
-import { formatDate } from "../utils/common";
+import { formatDate, formatHour } from "../utils/common";
 import { RequestInfos } from "../components/request-infos";
 import _, { isEmpty, trimEnd } from "lodash";
 import {
@@ -50,9 +50,10 @@ const TABLE_HEAD = [
   "Civilité",
   "Nom et Prénom",
   "Téléphone",
-  "Statut",
-  "Type d'usager",
-  "Créer le",
+  "Heure",
+  "Tribunal",
+  "Commune de résidence",
+  "Quantité d'ECJ",
   "Actions",
 ];
 
@@ -72,6 +73,7 @@ export function RequestsPage() {
   const [status, setStatus] = React.useState<string>("");
   const [startDate, setStartDate] = React.useState<string>("");
   const [endDate, setEndDate] = React.useState<string>("");
+  const [searchQuery, setSearchQuery] = React.useState<string>("");
   const [departmentList, setDepartmentList] = React.useState<string[]>([]);
   const [courtList, setCourtList] = React.useState<string[]>([]);
 
@@ -146,6 +148,16 @@ export function RequestsPage() {
     setEndDate(formattedDate);
   };
 
+  const filterRequest = useMemo(() => {
+    if (isEmpty(searchQuery)) {
+      return requestsData?.results;
+    }
+
+    return requestsData?.results.filter((it: any) =>
+      it.code.includes(searchQuery)
+    );
+  }, [requestsData, searchQuery]);
+
   return (
     <LayoutContent>
       <BreadcrumbsMenu
@@ -212,90 +224,6 @@ export function RequestsPage() {
               items={centralFiles()}
             />
 
-            {/* <div>
-              <Listbox value={selected} onChange={setSelected}>
-                {({ open }) => (
-                  <>
-                    <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">
-                      Statut
-                    </Listbox.Label>
-                    <div className="relative mt-2">
-                      <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 sm:text-sm sm:leading-6">
-                        <span className="block truncate">
-                          {!isEmpty(selected) ? selected.name : "Sélectionner"}
-                        </span>
-                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                          <ChevronUpDownIcon
-                            className="h-5 w-5 text-gray-400"
-                            aria-hidden="true"
-                          />
-                        </span>
-                      </Listbox.Button>
-
-                      <Transition
-                        show={open}
-                        as={Fragment}
-                        leave="transition ease-in duration-100"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                      >
-                        <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                          {requestStatus
-                            .filter((it) => it.value !== "STARTED")
-                            .map((item) => (
-                              <Listbox.Option
-                                key={item.value}
-                                className={({ active }) =>
-                                  classNames(
-                                    active
-                                      ? "bg-green-600 text-white"
-                                      : "text-gray-900",
-                                    "relative cursor-default select-none py-2 pl-3 pr-9"
-                                  )
-                                }
-                                value={item}
-                                onClick={() => setStatus(item.value)}
-                              >
-                                {({ selected, active }) => (
-                                  <>
-                                    <span
-                                      className={classNames(
-                                        selected
-                                          ? "font-semibold"
-                                          : "font-normal",
-                                        "block truncate"
-                                      )}
-                                    >
-                                      {item.name}
-                                    </span>
-
-                                    {selected ? (
-                                      <span
-                                        className={classNames(
-                                          active
-                                            ? "text-white"
-                                            : "text-green-600",
-                                          "absolute inset-y-0 right-0 flex items-center pr-4"
-                                        )}
-                                      >
-                                        <CheckIcon
-                                          className="h-5 w-5"
-                                          aria-hidden="true"
-                                        />
-                                      </span>
-                                    ) : null}
-                                  </>
-                                )}
-                              </Listbox.Option>
-                            ))}
-                        </Listbox.Options>
-                      </Transition>
-                    </div>
-                  </>
-                )}
-              </Listbox>
-            </div> */}
-
             <div>
               <label
                 htmlFor="email"
@@ -323,28 +251,38 @@ export function RequestsPage() {
                 <input
                   type="date"
                   onChange={(e) => handleEndDateChange(e)}
-                  className="block w-full rounded-md border-0 py-1.5 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+                  className="block w-full focus:outline-none rounded-md border-0 py-1.5 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
           </div>
-          <div className="flex flex-row w-96 gap-4 mt-4 justify-start">
-            <Button
-              color={"blue"}
-              fullWidth
-              placeholder={""}
-              onClick={() => handleSearch()}
-            >
-              Appliquer
-            </Button>
-            <Button
-              color={"red"}
-              fullWidth
-              placeholder={""}
-              onClick={() => window.location.reload()}
-            >
-              Reset
-            </Button>
+          <div className="flex gap-4 lg:flex-row items-center justify-between">
+            <div className="flex flex-row w-96 gap-4 mt-4 justify-start">
+              <Button
+                color={"blue"}
+                fullWidth
+                placeholder={""}
+                onClick={() => handleSearch()}
+              >
+                Appliquer
+              </Button>
+              <Button
+                color={"red"}
+                fullWidth
+                placeholder={""}
+                onClick={() => window.location.reload()}
+              >
+                Reset
+              </Button>
+            </div>
+            <div>
+              <input
+                placeholder="Rechercher par code"
+                type="text"
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="block w-full rounded-md border-0 py-1.5 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+              />
+            </div>
           </div>
         </CardHeader>
         {isLoadingRequests ? (
@@ -371,16 +309,14 @@ export function RequestsPage() {
                   ))}
                 </tr>
               </thead>
-              {!isEmpty(requestsData?.results) ? (
+              {!isEmpty(filterRequest) ? (
                 <tbody>
-                  {requestsData!.results.filter(
-                    (it: any) => it.status !== "STARTED"
-                  ).length > 0 ? (
-                    requestsData?.results
+                  {filterRequest!.filter((it: any) => it.status !== "STARTED")
+                    .length > 0 ? (
+                    filterRequest!
                       .filter((it: any) => it.status !== "STARTED")
                       .map((item, index) => {
-                        const isLast =
-                          index === requestsData?.results.length - 1;
+                        const isLast = index === filterRequest!.length - 1;
                         const classes = isLast
                           ? "p-4"
                           : "p-4 border-b border-blue-gray-50";
@@ -419,6 +355,7 @@ export function RequestsPage() {
                                 {item.fullName}
                               </Typography>
                             </td>
+
                             <td className={classes}>
                               <Typography
                                 variant="small"
@@ -430,27 +367,13 @@ export function RequestsPage() {
                               </Typography>
                             </td>
                             <td className={classes}>
-                              <div className="w-max">
-                                <Chip
-                                  size="sm"
-                                  variant="ghost"
-                                  value={
-                                    requestStatus.find(
-                                      (it) => it.value === item.status
-                                    )?.name!
-                                  }
-                                  color={"green"}
-                                />
-                              </div>
-                            </td>
-                            <td className={classes}>
                               <Typography
                                 variant="small"
                                 color="blue-gray"
                                 className="font-normal"
                                 placeholder={""}
                               >
-                                {item.typeUser}
+                                {formatHour(item.created_on)}
                               </Typography>
                             </td>
                             <td className={classes}>
@@ -460,9 +383,30 @@ export function RequestsPage() {
                                 className="font-normal"
                                 placeholder={""}
                               >
-                                {formatDate(item.created_on)}
+                                {item.court}
                               </Typography>
                             </td>
+                            <td className={classes}>
+                              <Typography
+                                variant="small"
+                                color="blue-gray"
+                                className="font-normal"
+                                placeholder={""}
+                              >
+                                {item.destination_address}
+                              </Typography>
+                            </td>
+                            <td className={classes}>
+                              <Typography
+                                variant="small"
+                                color="blue-gray"
+                                className="font-normal"
+                                placeholder={""}
+                              >
+                                {item.criminalRecordNumber}
+                              </Typography>
+                            </td>
+
                             <td className={classes}>
                               <Tooltip content="Plus d'infos">
                                 <IconButton

@@ -23,10 +23,10 @@ import {
   RequestPaginate,
   RequestResponse,
 } from "../core/entities/request.entities";
-import React, { Fragment } from "react";
+import React, { Fragment, useMemo } from "react";
 import { SpinnerLoader } from "../components/spinner-loader";
 import { PaginationCustom } from "../components/pagination-custom";
-import { formatDate } from "../utils/common";
+import { formatDate, formatHour } from "../utils/common";
 import { RequestInfos } from "../components/request-infos";
 import _, { isEmpty, trimEnd } from "lodash";
 import {
@@ -50,9 +50,11 @@ const TABLE_HEAD = [
   "Civilité",
   "Nom et Prénom",
   "Téléphone",
-  "Statut",
-  "Type d'usager",
-  "Créer le",
+  // "Statut",
+  "Heure",
+  "Tribunal",
+  "Commune de résidence",
+  "Quantité d'ECJ",
   "Actions",
 ];
 
@@ -74,6 +76,7 @@ export function RequestsStartedPage() {
   const [endDate, setEndDate] = React.useState<string>("");
   const [departmentList, setDepartmentList] = React.useState<string[]>([]);
   const [courtList, setCourtList] = React.useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = React.useState<string>("");
 
   const {
     data: requestsData,
@@ -145,6 +148,16 @@ export function RequestsStartedPage() {
     const formattedDate = formatToYYYYMMDD(event.target.value);
     setEndDate(formattedDate);
   };
+
+  const filterRequest = useMemo(() => {
+    if (isEmpty(searchQuery)) {
+      return requestsData?.results;
+    }
+
+    return requestsData?.results.filter((it: any) =>
+      it.code.includes(searchQuery)
+    );
+  }, [requestsData, searchQuery]);
 
   return (
     <LayoutContent>
@@ -244,23 +257,33 @@ export function RequestsStartedPage() {
               </div>
             </div>
           </div>
-          <div className="flex flex-row w-96 gap-4 mt-4 justify-start">
-            <Button
-              color={"blue"}
-              fullWidth
-              placeholder={""}
-              onClick={() => handleSearch()}
-            >
-              Appliquer
-            </Button>
-            <Button
-              color={"red"}
-              fullWidth
-              placeholder={""}
-              onClick={() => window.location.reload()}
-            >
-              Reset
-            </Button>
+          <div className="flex gap-4 lg:flex-row items-center justify-between">
+            <div className="flex flex-row w-96 gap-4 mt-4 justify-start">
+              <Button
+                color={"blue"}
+                fullWidth
+                placeholder={""}
+                onClick={() => handleSearch()}
+              >
+                Appliquer
+              </Button>
+              <Button
+                color={"red"}
+                fullWidth
+                placeholder={""}
+                onClick={() => window.location.reload()}
+              >
+                Reset
+              </Button>
+            </div>
+            <div>
+              <input
+                placeholder="Rechercher par code"
+                type="text"
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="focus:outline-none block w-full rounded-md border-0 py-1.5 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
+              />
+            </div>
           </div>
         </CardHeader>
         {isLoadingRequests ? (
@@ -287,11 +310,11 @@ export function RequestsStartedPage() {
                   ))}
                 </tr>
               </thead>
-              {!isEmpty(requestsData?.results) ? (
+              {!isEmpty(filterRequest!) ? (
                 <tbody>
-                  {requestsData?.results.length! > 0 ? (
-                    requestsData?.results.map((item, index) => {
-                      const isLast = index === requestsData?.results.length - 1;
+                  {filterRequest!.length! > 0 ? (
+                    filterRequest!.map((item, index) => {
+                      const isLast = index === filterRequest!.length - 1;
                       const classes = isLast
                         ? "p-4"
                         : "p-4 border-b border-blue-gray-50";
@@ -340,7 +363,7 @@ export function RequestsStartedPage() {
                               {item.phoneNumber}
                             </Typography>
                           </td>
-                          <td className={classes}>
+                          {/* <td className={classes}>
                             <div className="w-max">
                               <Chip
                                 size="sm"
@@ -353,7 +376,7 @@ export function RequestsStartedPage() {
                                 color={"green"}
                               />
                             </div>
-                          </td>
+                          </td> */}
                           <td className={classes}>
                             <Typography
                               variant="small"
@@ -361,7 +384,7 @@ export function RequestsStartedPage() {
                               className="font-normal"
                               placeholder={""}
                             >
-                              {item.typeUser}
+                              {formatHour(item.created_on)}
                             </Typography>
                           </td>
                           <td className={classes}>
@@ -371,7 +394,27 @@ export function RequestsStartedPage() {
                               className="font-normal"
                               placeholder={""}
                             >
-                              {formatDate(item.created_on)}
+                              {item.court}
+                            </Typography>
+                          </td>
+                          <td className={classes}>
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal"
+                              placeholder={""}
+                            >
+                              {item.destination_address}
+                            </Typography>
+                          </td>
+                          <td className={classes}>
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal"
+                              placeholder={""}
+                            >
+                              {item.criminalRecordNumber}
                             </Typography>
                           </td>
                           <td className={classes}>

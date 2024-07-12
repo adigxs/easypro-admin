@@ -7,10 +7,13 @@ import {
   Typography,
   Input,
   IconButton,
+  Chip,
 } from "@material-tailwind/react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 
 import { RequestResponse } from "../core/entities/request.entities";
+import { requestStatus } from "../utils/mocks";
+import { formatDate } from "../utils/common";
 
 interface RequestInfosProps {
   request: RequestResponse;
@@ -45,6 +48,26 @@ export function RequestInfos({ open, handleOpen, request }: RequestInfosProps) {
             </Typography>
             <hr />
             <div className="grid grid-cols-2 gap-2">
+              <div className="col-span-2 flex gap-2">
+                <Typography
+                  className="-mb-2 text-base font-medium"
+                  placeholder={""}
+                >
+                  Statut:{" "}
+                </Typography>
+
+                <div>
+                  <Chip
+                    size="sm"
+                    variant="ghost"
+                    value={
+                      requestStatus.find((it) => it.value === request.status)
+                        ?.name!
+                    }
+                    color={"green"}
+                  />
+                </div>
+              </div>
               <Typography
                 className="-mb-2 text-base font-medium"
                 placeholder={""}
@@ -188,6 +211,23 @@ export function RequestInfos({ open, handleOpen, request }: RequestInfosProps) {
               <span className="font-semibold text-black">
                 {request.criminalRecordNumber}
               </span>
+              <div className="col-span-2 flex gap-2">
+                <Typography
+                  className="-mb-2 text-base font-medium"
+                  placeholder={""}
+                >
+                  Créer le:{" "}
+                </Typography>
+
+                <div>
+                  <Chip
+                    size="sm"
+                    variant="ghost"
+                    value={formatDate(request.created_on)}
+                    color={"orange"}
+                  />
+                </div>
+              </div>
             </div>
           </CardBody>
           <CardFooter className="pt-0" placeholder={""}>
