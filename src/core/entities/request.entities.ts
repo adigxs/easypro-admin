@@ -42,6 +42,7 @@ export interface RequestResponse {
   destination_location: string;
   user_marital_status: string;
   user_occupation: string;
+  user_residency_municipality: string;
 }
 export interface RequestPaginate {
   results: RequestResponse[];

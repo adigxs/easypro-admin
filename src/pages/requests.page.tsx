@@ -393,7 +393,7 @@ export function RequestsPage() {
                                 className="font-normal"
                                 placeholder={""}
                               >
-                                {item.destination_address}
+                                {item.user_residency_municipality}
                               </Typography>
                             </td>
                             <td className={classes}>
