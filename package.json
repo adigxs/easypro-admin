@@ -46,7 +46,7 @@
   },
   "scripts": {
     "start": "react-scripts start .env",
-    "build": "react-scripts build .env",
+    "b-prod": "react-scripts build .env",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
