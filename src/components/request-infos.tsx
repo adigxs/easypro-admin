@@ -104,15 +104,7 @@ export function RequestInfos({ open, handleOpen, request }: RequestInfosProps) {
               <span className="font-semibold text-black">
                 {request.whatsappContact}
               </span>
-              <Typography
-                className="-mb-2 text-base font-medium"
-                placeholder={""}
-              >
-                Civilité:{" "}
-              </Typography>
-              <span className="font-semibold text-black">
-                {request.civility}
-              </span>
+
               <Typography
                 className="-mb-2 text-base font-medium"
                 placeholder={""}
@@ -173,6 +165,16 @@ export function RequestInfos({ open, handleOpen, request }: RequestInfosProps) {
                 Je residence à:{" "}
               </Typography>
               <span className="font-semibold text-black">
+                {request.destination_address}
+              </span>
+
+              <Typography
+                className="-mb-2 text-base font-medium"
+                placeholder={""}
+              >
+                Lieu dit:{" "}
+              </Typography>
+              <span className="font-semibold text-black">
                 {request.destination_location}
               </span>
               <Typography
@@ -182,16 +184,7 @@ export function RequestInfos({ open, handleOpen, request }: RequestInfosProps) {
                 Ma commune de résidence est:{" "}
               </Typography>
               <span className="font-semibold text-black">
-                {request.destination_address}
-              </span>
-              <Typography
-                className="-mb-2 text-base font-medium"
-                placeholder={""}
-              >
-                Code postal:{" "}
-              </Typography>
-              <span className="font-semibold text-black">
-                {request.user_postal_code}
+                {request.regionOfBirth}
               </span>
               <Typography
                 className="-mb-2 text-base font-medium"
